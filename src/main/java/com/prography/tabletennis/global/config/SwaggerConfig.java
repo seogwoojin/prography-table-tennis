@@ -1,4 +1,4 @@
-package com.prography.tabletennis.global;
+package com.prography.tabletennis.global.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -14,7 +14,7 @@ class SwaggerConfig {
 	@Bean
 	public OpenAPI openAPI() {
 		return new OpenAPI().info(apiInfo()).servers(
-			List.of(new Server().url("http://localhost:8088"))
+			List.of(new Server().url("http://localhost:8080"))
 		);
 	}
 
