@@ -1,6 +1,6 @@
 package com.prography.tabletennis.domain.user.dto.response;
 
-import java.util.Date;
+import static com.prography.tabletennis.global.utils.GlobalConstant.*;
 
 import com.prography.tabletennis.domain.user.entity.User;
 import com.prography.tabletennis.domain.user.entity.enums.UserStatus;
@@ -18,8 +18,8 @@ public class UserInfoResponse {
 	String name;
 	String email;
 	UserStatus userStatus;
-	Date createdAt;
-	Date updatedAt;
+	String createdAt;
+	String updatedAt;
 
 	@Builder
 	public UserInfoResponse(
@@ -28,8 +28,8 @@ public class UserInfoResponse {
 		String name,
 		String email,
 		UserStatus userStatus,
-		Date createdAt,
-		Date updatedAt
+		String createdAt,
+		String updatedAt
 	) {
 		this.id = id;
 		this.fakerId = fakerId;
@@ -47,8 +47,8 @@ public class UserInfoResponse {
 			.name(user.getName())
 			.email(user.getEmail())
 			.userStatus(user.getUserStatus())
-			.createdAt(user.getCreatedAt())
-			.updatedAt(user.getUpdatedAt())
+			.createdAt(user.getCreatedAt().format(DATE_TIME_FORMATTER))
+			.updatedAt(user.getUpdatedAt().format(DATE_TIME_FORMATTER))
 			.build();
 	}
 }
