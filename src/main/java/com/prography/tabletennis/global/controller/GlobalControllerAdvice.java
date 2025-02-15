@@ -26,51 +26,17 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GlobalControllerAdvice {
 	@ExceptionHandler(CustomException.class)
-	public ResponseEntity<ApiResponse<Void>> handleLbException(CustomException e) {
+	public ResponseEntity<ApiResponse<Void>> handleCustomException(CustomException e) {
 		log.error(e.getMessage());
 		return ResponseEntity
 			.status(HttpStatus.BAD_REQUEST)
 			.body(ApiResponse.fail(e.getReturnCode()));
 	}
 
-	@ExceptionHandler({
-		HttpMessageNotReadableException.class,
-		MissingServletRequestParameterException.class,
-		MethodArgumentTypeMismatchException.class
-	})
-	public ResponseEntity<ApiResponse<Void>> handleRequestException(Exception e) {
-		return ResponseEntity
-			.status(HttpStatus.BAD_REQUEST)
-			.body(ApiResponse.fail(ReturnCode.WRONG_PARAMETER));
-	}
-
-	@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-	public ResponseEntity<ApiResponse<Void>> handleMethodNotSupportedException() {
-		return ResponseEntity
-			.status(HttpStatus.METHOD_NOT_ALLOWED)
-			.body(ApiResponse.fail(ReturnCode.METHOD_NOT_ALLOWED));
-	}
-
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ApiResponse<List<FieldError>>> badRequestExHandler(
-		MethodArgumentNotValidException ex) {
-		BindingResult bindingResult = ex.getBindingResult();
-		return ResponseEntity
-			.status(HttpStatus.BAD_REQUEST)
-			.body(ApiResponse.fail(ReturnCode.WRONG_PARAMETER, bindingResult.getFieldErrors()));
-	}
-
-	@ExceptionHandler(SQLException.class)
-	public ResponseEntity<ApiResponse<Void>> handleServerException() {
-		return ResponseEntity
-			.status(HttpStatus.INTERNAL_SERVER_ERROR)
-			.body(ApiResponse.error(ReturnCode.INTERNAL_SERVER_ERROR));
-	}
-
 	@ExceptionHandler(RuntimeException.class)
 	public ResponseEntity<ApiResponse<Void>> handleBusinessException() {
 		return ResponseEntity
 			.status(HttpStatus.INTERNAL_SERVER_ERROR)
-			.body(ApiResponse.error(ReturnCode.INTERNAL_SERVER_ERROR));
+			.body(ApiResponse.error(ReturnCode.SERVER_ERROR));
 	}
 }

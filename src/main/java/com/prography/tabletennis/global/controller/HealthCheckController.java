@@ -1,5 +1,8 @@
 package com.prography.tabletennis.global.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,12 +22,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public class HealthCheckController {
 	@GetMapping
 	public ResponseEntity<ApiResponse<Void>> checkServerHealth() {
-		return ResponseEntity.ok(ApiResponse.success(null));
-	}
-
-	@GetMapping("/test")
-	public String testException() {
-		// GlobalAdvice에서 처리할 CustomException 발생
-		throw new CustomException(ReturnCode.EXTERNAL_SERVER_ERROR);
+		return ResponseEntity.ok(ApiResponse.success());
 	}
 }
