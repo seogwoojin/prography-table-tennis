@@ -1,6 +1,7 @@
 package com.prography.tabletennis.global.entity;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -15,8 +16,8 @@ import lombok.Getter;
 @EntityListeners(AuditingEntityListener.class)
 public class BaseTimeEntity {
 	@CreatedDate
-	private LocalDateTime createdDate;
+	private Date createdDate;
 
 	@LastModifiedDate
-	private LocalDateTime modifiedDate;
+	private Date modifiedDate;
 }
