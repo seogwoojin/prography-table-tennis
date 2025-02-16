@@ -34,7 +34,8 @@ public class GlobalControllerAdvice {
 	}
 
 	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<ApiResponse<Void>> handleBusinessException() {
+	public ResponseEntity<ApiResponse<Void>> handleBusinessException(RuntimeException e) {
+		log.error(e.getMessage());
 		return ResponseEntity
 			.status(HttpStatus.INTERNAL_SERVER_ERROR)
 			.body(ApiResponse.error(ReturnCode.SERVER_ERROR));
