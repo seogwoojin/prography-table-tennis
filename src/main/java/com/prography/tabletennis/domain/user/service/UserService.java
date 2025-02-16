@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.prography.tabletennis.domain.init.dto.response.UserData;
-import com.prography.tabletennis.domain.user.dto.response.UserResultResponse;
+import com.prography.tabletennis.domain.user.dto.response.UserPageResponse;
 import com.prography.tabletennis.domain.user.entity.User;
 import com.prography.tabletennis.domain.user.repository.UserRepository;
 import com.prography.tabletennis.global.response.CustomException;
@@ -23,9 +23,9 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	private final UserRepository userRepository;
 
-	public UserResultResponse getUserInfos(PageRequest pageRequest) {
+	public UserPageResponse getUserInfos(PageRequest pageRequest) {
 		Page<User> users = userRepository.findAll(pageRequest);
-		return UserResultResponse.from(users);
+		return UserPageResponse.from(users);
 	}
 
 	public User getUserById(Integer userId) {
