@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.prography.tabletennis.domain.room.dto.request.CreateRoomRequest;
+import com.prography.tabletennis.domain.room.dto.response.RoomDetailInfoResponse;
 import com.prography.tabletennis.domain.room.dto.response.RoomPageResponse;
 import com.prography.tabletennis.domain.room.entity.Room;
 import com.prography.tabletennis.domain.room.repository.RoomRepository;
@@ -37,6 +38,11 @@ public class RoomService {
 	public RoomPageResponse getRoomInfos(PageRequest pageRequest) {
 		Page<Room> rooms = roomRepository.findAll(pageRequest);
 		return RoomPageResponse.from(rooms);
+	}
+
+	public RoomDetailInfoResponse getRoomDetailInfo(Integer roomId) {
+		Room room = roomRepository.findById(roomId).orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
+		return RoomDetailInfoResponse.from(room);
 	}
 
 	private boolean checkUserCanCreateRoom(User user) {
