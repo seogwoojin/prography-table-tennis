@@ -2,14 +2,17 @@ package com.prography.tabletennis.domain.user.entity;
 
 import java.util.List;
 
+import com.prography.tabletennis.domain.room.entity.Room;
 import com.prography.tabletennis.domain.user.entity.enums.UserStatus;
 import com.prography.tabletennis.global.entity.BaseTimeEntity;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,7 +40,7 @@ public class User extends BaseTimeEntity {
 	@Enumerated(EnumType.STRING)
 	UserStatus userStatus;
 
-	@OneToOne(mappedBy = "user")
+	@OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	UserRoom userRoom;
 
 	@Builder
@@ -46,5 +49,11 @@ public class User extends BaseTimeEntity {
 		this.name = name;
 		this.email = email;
 		this.userStatus = userStatus;
+	}
+
+	public void addUserRoom(Room room) {
+		// Cascade 설정에 의해 자동으로 저장됨
+		UserRoom newUserRoom = UserRoom.builder().user(this).room(room).build();
+		this.userRoom = newUserRoom;
 	}
 }

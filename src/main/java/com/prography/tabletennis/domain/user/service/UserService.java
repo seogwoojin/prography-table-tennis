@@ -12,6 +12,8 @@ import com.prography.tabletennis.domain.init.dto.response.UserData;
 import com.prography.tabletennis.domain.user.dto.response.UserResultResponse;
 import com.prography.tabletennis.domain.user.entity.User;
 import com.prography.tabletennis.domain.user.repository.UserRepository;
+import com.prography.tabletennis.global.response.CustomException;
+import com.prography.tabletennis.global.response.ReturnCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +26,10 @@ public class UserService {
 	public UserResultResponse getUserInfos(PageRequest pageRequest) {
 		Page<User> users = userRepository.findAll(pageRequest);
 		return UserResultResponse.from(users);
+	}
+
+	public User getUserById(Integer userId) {
+		return userRepository.findById(userId).orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
 	}
 
 	@Transactional

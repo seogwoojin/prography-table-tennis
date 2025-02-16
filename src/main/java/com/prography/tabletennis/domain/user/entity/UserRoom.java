@@ -3,6 +3,7 @@ package com.prography.tabletennis.domain.user.entity;
 import com.prography.tabletennis.domain.room.entity.Room;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -26,10 +27,10 @@ public class UserRoom {
 	Integer id;
 
 	@JoinColumn(name = "room_id", nullable = false)
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	Room room;
 
 	@JoinColumn(name = "user_id", nullable = false)
-	@OneToOne
+	@OneToOne(fetch = FetchType.LAZY)
 	User user;
 }
