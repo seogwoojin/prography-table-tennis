@@ -15,43 +15,44 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RoomDetailInfoResponse {
-	Integer id;
-	String title;
-	Integer hostId;
-	RoomType roomType;
-	@JsonProperty("status")
-	RoomStatus roomStatus;
-	String createdAt;
-	String updatedAt;
+    Integer id;
+    String title;
+    Integer hostId;
+    RoomType roomType;
 
-	@Builder
-	public RoomDetailInfoResponse(
-		Integer id,
-		String title,
-		Integer hostId,
-		RoomType roomType,
-		RoomStatus roomStatus,
-		String createdAt,
-		String updatedAt
-	) {
-		this.id = id;
-		this.title = title;
-		this.hostId = hostId;
-		this.roomType = roomType;
-		this.roomStatus = roomStatus;
-		this.createdAt = createdAt;
-		this.updatedAt = updatedAt;
-	}
+    @JsonProperty("status")
+    RoomStatus roomStatus;
 
-	public static RoomDetailInfoResponse from(Room room) {
-		return RoomDetailInfoResponse.builder()
-			.id(room.getId())
-			.title(room.getTitle())
-			.hostId(room.getHost())
-			.roomType(room.getRoomType())
-			.roomStatus(room.getRoomStatus())
-			.createdAt(room.getCreatedAt().format(DATE_TIME_FORMATTER))
-			.updatedAt(room.getUpdatedAt().format(DATE_TIME_FORMATTER))
-			.build();
-	}
+    String createdAt;
+    String updatedAt;
+
+    @Builder
+    public RoomDetailInfoResponse(
+            Integer id,
+            String title,
+            Integer hostId,
+            RoomType roomType,
+            RoomStatus roomStatus,
+            String createdAt,
+            String updatedAt) {
+        this.id = id;
+        this.title = title;
+        this.hostId = hostId;
+        this.roomType = roomType;
+        this.roomStatus = roomStatus;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    public static RoomDetailInfoResponse from(Room room) {
+        return RoomDetailInfoResponse.builder()
+                .id(room.getId())
+                .title(room.getTitle())
+                .hostId(room.getHost())
+                .roomType(room.getRoomType())
+                .roomStatus(room.getRoomStatus())
+                .createdAt(room.getCreatedAt().format(DATE_TIME_FORMATTER))
+                .updatedAt(room.getUpdatedAt().format(DATE_TIME_FORMATTER))
+                .build();
+    }
 }

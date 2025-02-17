@@ -16,13 +16,12 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class InitController {
-	private final InitService initService;
+    private final InitService initService;
 
-	@PostMapping
-	public ResponseEntity<ApiResponse<Void>> initializeData(
-		@RequestBody InitDataRequest initDataRequest
-	) {
-		initService.initializeDatabase(initDataRequest);
-		return ResponseEntity.ok(ApiResponse.success());
-	}
+    @PostMapping
+    public ResponseEntity<ApiResponse<Void>> initializeData(
+            @RequestBody InitDataRequest initDataRequest) {
+        initService.initializeDatabase(initDataRequest);
+        return ResponseEntity.ok(ApiResponse.success());
+    }
 }

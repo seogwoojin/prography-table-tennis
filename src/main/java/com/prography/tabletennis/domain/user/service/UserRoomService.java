@@ -9,9 +9,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserRoomService {
-	private final UserRoomRepository userRoomRepository;
+    private final UserRoomRepository userRoomRepository;
 
-	public void deleteAll() {
-		userRoomRepository.deleteAll();
-	}
+    public void deleteAll() {
+        userRoomRepository.deleteAll();
+    }
 }
