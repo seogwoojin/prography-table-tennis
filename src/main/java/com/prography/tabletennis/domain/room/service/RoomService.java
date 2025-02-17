@@ -15,6 +15,7 @@ import com.prography.tabletennis.domain.room.entity.enums.RoomStatus;
 import com.prography.tabletennis.domain.room.repository.RoomRepository;
 import com.prography.tabletennis.domain.room.repository.UserRoomRepository;
 import com.prography.tabletennis.domain.room.utils.RoomValidator;
+import com.prography.tabletennis.domain.room.utils.TeamAssignmentService;
 import com.prography.tabletennis.domain.user.entity.User;
 import com.prography.tabletennis.domain.user.service.UserService;
 import com.prography.tabletennis.global.response.CustomException;
@@ -30,26 +31,37 @@ public class RoomService {
   private final UserService userService;
   private final RoomValidator roomValidator;
   private final UserRoomRepository userRoomRepository;
+  private final TeamAssignmentService teamAssignmentService;
 
-	@Transactional
-	public void createNewRoom(CreateRoomRequest createRoomRequest) {
-		User user = userService.getUserById(createRoomRequest.getUserId());
-		roomValidator.validateUserIsEligibleForRoom(user);
+  @Transactional
+  public void createNewRoom(CreateRoomRequest createRoomRequest) {
+    User user = userService.getUserById(createRoomRequest.getUserId());
+    roomValidator.validateUserIsEligibleForRoom(user);
 
-		Room room = roomRepository.save(createRoomRequest.toEntity());
-		UserRoom userRoom = UserRoom.builder().user(user).room(room).build();
-		userRoomRepository.save(userRoom);
-	}
+    Room room = roomRepository.save(createRoomRequest.toEntity());
+    UserRoom userRoom =
+        UserRoom.builder()
+            .user(user)
+            .room(room)
+            .teamType(teamAssignmentService.assignTeam(room))
+            .build();
+    userRoomRepository.save(userRoom);
+  }
 
-	@Transactional
-	public void joinRoom(Integer roomId, UserInfoRequest userInfoRequest) {
-		User user = userService.getUserById(userInfoRequest.getUserId());
-		Room room = getRoomById(roomId);
-		roomValidator.validateUserCanJoinRoom(user, room);
+  @Transactional
+  public void joinRoom(Integer roomId, UserInfoRequest userInfoRequest) {
+    User user = userService.getUserById(userInfoRequest.getUserId());
+    Room room = getRoomById(roomId);
+    roomValidator.validateUserCanJoinRoom(user, room);
 
-		UserRoom userRoom = UserRoom.builder().user(user).room(room).build();
-		userRoomRepository.save(userRoom);
-	}
+    UserRoom userRoom =
+        UserRoom.builder()
+            .user(user)
+            .room(room)
+            .teamType(teamAssignmentService.assignTeam(room))
+            .build();
+    userRoomRepository.save(userRoom);
+  }
 
   @Transactional
   public void exitRoom(Integer userId, Integer roomId) {
@@ -75,10 +87,10 @@ public class RoomService {
     return RoomPageResponse.from(rooms);
   }
 
-	public RoomDetailInfoResponse getRoomDetailInfo(Integer roomId) {
-		Room room = getRoomById(roomId);
-		return RoomDetailInfoResponse.from(room);
-	}
+  public RoomDetailInfoResponse getRoomDetailInfo(Integer roomId) {
+    Room room = getRoomById(roomId);
+    return RoomDetailInfoResponse.from(room);
+  }
 
   private Room getRoomById(Integer roomId) {
     return roomRepository

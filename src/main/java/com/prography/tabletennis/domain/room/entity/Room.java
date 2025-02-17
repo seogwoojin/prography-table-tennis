@@ -62,10 +62,11 @@ public class Room extends BaseTimeEntity {
   }
 
   public boolean isFull() {
-    if (this.roomType == RoomType.SINGLE && this.userRoomList.size() >= this.roomType.getValue()) {
+    if (this.roomType == RoomType.SINGLE
+        && this.userRoomList.size() == this.roomType.getCapacity()) {
       return true;
     } else if (this.roomType == RoomType.DOUBLE
-        && this.userRoomList.size() >= this.roomType.getValue()) {
+        && this.userRoomList.size() >= this.roomType.getCapacity()) {
       return true;
     }
     return false;

@@ -7,9 +7,9 @@ public enum RoomType {
   SINGLE(2),
   DOUBLE(4);
 
-  final Integer value;
+  final Integer capacity;
 
-  RoomType(Integer value) {
-    this.value = value;
+  RoomType(Integer capacity) {
+    this.capacity = capacity;
   }
 }
