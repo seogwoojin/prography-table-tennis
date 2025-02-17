@@ -2,15 +2,15 @@ package com.prography.tabletennis.domain.room.entity;
 
 import java.util.List;
 
-import com.prography.tabletennis.domain.user.entity.UserRoom;
-import com.prography.tabletennis.global.entity.BaseTimeEntity;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
+
+import com.prography.tabletennis.domain.user.entity.UserRoom;
+import com.prography.tabletennis.global.entity.BaseTimeEntity;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,15 +23,25 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 public class Room extends BaseTimeEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Integer id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer id;
 
-	String title;
-	Integer host;
-	RoomType roomType;
-	RoomStatus roomStatus;
+    String title;
+    Integer host;
+    RoomType roomType;
+    RoomStatus roomStatus;
 
-	@OneToMany(mappedBy = "room")
-	List<UserRoom> userRoomList;
+    @OneToMany(mappedBy = "room")
+    List<UserRoom> userRoomList;
+
+    public boolean isFull() {
+        if (this.roomType == RoomType.SINGLE && this.userRoomList.size() >= RoomType.SINGLE.value) {
+            return true;
+        } else if (this.roomType == RoomType.DOUBLE
+                && this.userRoomList.size() >= RoomType.DOUBLE.value) {
+            return true;
+        }
+        return false;
+    }
 }
