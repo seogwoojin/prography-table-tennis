@@ -1,6 +1,8 @@
-package com.prography.tabletennis.domain.user.entity;
+package com.prography.tabletennis.domain.room.entity;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,7 +11,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 
-import com.prography.tabletennis.domain.room.entity.Room;
+import com.prography.tabletennis.domain.room.entity.enums.TeamType;
+import com.prography.tabletennis.domain.user.entity.User;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,4 +37,7 @@ public class UserRoom {
     @JoinColumn(name = "user_id", nullable = false)
     @OneToOne(fetch = FetchType.LAZY)
     User user;
+
+    @Enumerated(value = EnumType.STRING)
+    TeamType teamType;
 }
