@@ -13,8 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/health")
 @Tag(name = "Health")
 public class HealthCheckController {
-    @GetMapping
-    public ResponseEntity<ApiResponse<Void>> checkServerHealth() {
-        return ResponseEntity.ok(ApiResponse.success());
-    }
+  @GetMapping
+  public ResponseEntity<ApiResponse<Void>> checkServerHealth() {
+    return ResponseEntity.ok(ApiResponse.success());
+  }
 }

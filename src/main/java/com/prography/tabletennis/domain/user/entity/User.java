@@ -25,31 +25,31 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  Integer id;
 
-    Integer fakerId;
-    String name;
-    String email;
+  Integer fakerId;
+  String name;
+  String email;
 
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    UserStatus userStatus;
+  @Column(name = "status")
+  @Enumerated(EnumType.STRING)
+  UserStatus userStatus;
 
-    // OneToOne 관계에서 주인이 아닌 엔티티는 FetchType.LAZY로 동작하지 않는다.
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
-    UserRoom userRoom;
+  // OneToOne 관계에서 주인이 아닌 엔티티는 FetchType.LAZY로 동작하지 않는다.
+  @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+  UserRoom userRoom;
 
-    @Builder
-    public User(Integer fakerId, String name, String email, UserStatus userStatus) {
-        this.fakerId = fakerId;
-        this.name = name;
-        this.email = email;
-        this.userStatus = userStatus;
-    }
+  @Builder
+  public User(Integer fakerId, String name, String email, UserStatus userStatus) {
+    this.fakerId = fakerId;
+    this.name = name;
+    this.email = email;
+    this.userStatus = userStatus;
+  }
 
-    public void exitRoom() {
-        this.userRoom = null;
-    }
+  public void exitRoom() {
+    this.userRoom = null;
+  }
 }

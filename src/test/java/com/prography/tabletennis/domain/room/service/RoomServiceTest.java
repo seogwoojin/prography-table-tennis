@@ -1,7 +1,6 @@
 package com.prography.tabletennis.domain.room.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.DisplayName;
@@ -13,8 +12,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.prography.tabletennis.domain.room.dto.request.CreateRoomRequest;
 import com.prography.tabletennis.domain.room.entity.Room;
-import com.prography.tabletennis.domain.room.entity.RoomType;
+import com.prography.tabletennis.domain.room.entity.UserRoom;
+import com.prography.tabletennis.domain.room.entity.enums.RoomType;
 import com.prography.tabletennis.domain.room.repository.RoomRepository;
+import com.prography.tabletennis.domain.room.repository.UserRoomRepository;
+import com.prography.tabletennis.domain.room.utils.RoomValidator;
 import com.prography.tabletennis.domain.user.entity.User;
 import com.prography.tabletennis.domain.user.entity.enums.UserStatus;
 import com.prography.tabletennis.domain.user.service.UserService;
@@ -22,35 +24,41 @@ import com.prography.tabletennis.global.response.CustomException;
 
 @ExtendWith(MockitoExtension.class)
 class RoomServiceTest {
-    @Mock private RoomRepository roomRepository;
+  @Mock private RoomRepository roomRepository;
 
-    @Mock private UserService userService;
-    @InjectMocks RoomService roomService;
+  @Mock private UserRoomRepository userRoomRepository;
 
-    @Test
-    @DisplayName("유저는 방을 두개 이상 생성할 수 없다.")
-    public void createRoomServiceTest() {
-        // Given
-        User mockUser = User.builder().userStatus(UserStatus.ACTIVE).build();
-        mockUser.addUserRoom(Room.builder().title("기존 방").build());
-        CreateRoomRequest createRoomRequest = new CreateRoomRequest(1, RoomType.SINGLE, "새로운 방");
-        when(userService.getUserById(1)).thenReturn(mockUser);
+  @Mock private RoomValidator roomValidator;
 
-        // When, Then
-        assertThatThrownBy(() -> roomService.createNewRoom(createRoomRequest))
-                .isInstanceOf(CustomException.class);
-    }
+  @Mock private UserService userService;
+  @InjectMocks RoomService roomService;
 
-    @Test
-    @DisplayName("ACTIVE 상태가 아닌 유저는 방을 생성할 수 없다.")
-    public void createRoomServiceWithStatus() {
-        // Given
-        User mockUser = User.builder().userStatus(UserStatus.WAIT).build();
-        CreateRoomRequest createRoomRequest = new CreateRoomRequest(1, RoomType.SINGLE, "새로운 방");
-        when(userService.getUserById(1)).thenReturn(mockUser);
+  @Test
+  @DisplayName("유저는 방을 두개 이상 생성할 수 없다.")
+  public void createRoomServiceTest() {
+    // Given
+    User mockUser = User.builder().userStatus(UserStatus.ACTIVE).build();
+    Room mockRoom = Room.builder().title("기존 방").build();
+    UserRoom userRoom = UserRoom.builder().user(mockUser).room(mockRoom).build();
+    CreateRoomRequest createRoomRequest = new CreateRoomRequest(1, RoomType.SINGLE, "새로운 방");
+    when(userService.getUserById(1)).thenReturn(mockUser);
+    doNothing().when(roomValidator).validateUserIsEligibleForRoom(mockUser);
 
-        // When, Then
-        assertThatThrownBy(() -> roomService.createNewRoom(createRoomRequest))
-                .isInstanceOf(CustomException.class);
-    }
+    // When, Then
+    assertThatThrownBy(() -> roomService.createNewRoom(createRoomRequest))
+        .isInstanceOf(CustomException.class);
+  }
+
+  @Test
+  @DisplayName("ACTIVE 상태가 아닌 유저는 방을 생성할 수 없다.")
+  public void createRoomServiceWithStatus() {
+    // Given
+    User mockUser = User.builder().userStatus(UserStatus.WAIT).build();
+    CreateRoomRequest createRoomRequest = new CreateRoomRequest(1, RoomType.SINGLE, "새로운 방");
+    when(userService.getUserById(1)).thenReturn(mockUser);
+
+    // When, Then
+    assertThatThrownBy(() -> roomService.createNewRoom(createRoomRequest))
+        .isInstanceOf(CustomException.class);
+  }
 }

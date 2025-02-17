@@ -27,48 +27,47 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 public class Room extends BaseTimeEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  Integer id;
 
-    String title;
-    Integer host;
+  String title;
+  Integer host;
 
-    @Enumerated(EnumType.STRING)
-    RoomType roomType;
+  @Enumerated(EnumType.STRING)
+  RoomType roomType;
 
-    @Enumerated(EnumType.STRING)
-    RoomStatus roomStatus;
+  @Enumerated(EnumType.STRING)
+  RoomStatus roomStatus;
 
-    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, orphanRemoval = true)
-    List<UserRoom> userRoomList = new ArrayList<>();
+  @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, orphanRemoval = true)
+  List<UserRoom> userRoomList = new ArrayList<>();
 
-    @Builder
-    public Room(
-            String title,
-            Integer host,
-            RoomType roomType,
-            RoomStatus roomStatus,
-            List<UserRoom> userRoomList) {
-        this.title = title;
-        this.host = host;
-        this.roomType = roomType;
-        this.roomStatus = roomStatus;
-        this.userRoomList = userRoomList;
+  @Builder
+  public Room(
+      String title,
+      Integer host,
+      RoomType roomType,
+      RoomStatus roomStatus,
+      List<UserRoom> userRoomList) {
+    this.title = title;
+    this.host = host;
+    this.roomType = roomType;
+    this.roomStatus = roomStatus;
+    this.userRoomList = userRoomList;
+  }
+
+  public void updateRoomStatus(RoomStatus roomStatus) {
+    this.roomStatus = roomStatus;
+  }
+
+  public boolean isFull() {
+    if (this.roomType == RoomType.SINGLE && this.userRoomList.size() >= this.roomType.getValue()) {
+      return true;
+    } else if (this.roomType == RoomType.DOUBLE
+        && this.userRoomList.size() >= this.roomType.getValue()) {
+      return true;
     }
-
-    public void updateRoomStatus(RoomStatus roomStatus) {
-        this.roomStatus = roomStatus;
-    }
-
-    public boolean isFull() {
-        if (this.roomType == RoomType.SINGLE
-                && this.userRoomList.size() >= this.roomType.getValue()) {
-            return true;
-        } else if (this.roomType == RoomType.DOUBLE
-                && this.userRoomList.size() >= this.roomType.getValue()) {
-            return true;
-        }
-        return false;
-    }
+    return false;
+  }
 }

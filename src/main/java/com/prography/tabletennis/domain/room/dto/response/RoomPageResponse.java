@@ -14,25 +14,25 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RoomPageResponse {
-    Integer totalElements;
-    Integer totalPages;
-    List<RoomInfoResponse> userList;
+  Integer totalElements;
+  Integer totalPages;
+  List<RoomInfoResponse> userList;
 
-    @Builder
-    public RoomPageResponse(
-            Integer totalElements, Integer totalPages, List<RoomInfoResponse> userList) {
-        this.totalElements = totalElements;
-        this.totalPages = totalPages;
-        this.userList = userList;
-    }
+  @Builder
+  public RoomPageResponse(
+      Integer totalElements, Integer totalPages, List<RoomInfoResponse> userList) {
+    this.totalElements = totalElements;
+    this.totalPages = totalPages;
+    this.userList = userList;
+  }
 
-    public static RoomPageResponse from(Page<Room> rooms) {
-        List<RoomInfoResponse> userList =
-                rooms.getContent().stream().map(RoomInfoResponse::from).toList();
-        return RoomPageResponse.builder()
-                .totalPages(rooms.getTotalPages())
-                .totalElements(Math.toIntExact(rooms.getTotalElements()))
-                .userList(userList)
-                .build();
-    }
+  public static RoomPageResponse from(Page<Room> rooms) {
+    List<RoomInfoResponse> userList =
+        rooms.getContent().stream().map(RoomInfoResponse::from).toList();
+    return RoomPageResponse.builder()
+        .totalPages(rooms.getTotalPages())
+        .totalElements(Math.toIntExact(rooms.getTotalElements()))
+        .userList(userList)
+        .build();
+  }
 }

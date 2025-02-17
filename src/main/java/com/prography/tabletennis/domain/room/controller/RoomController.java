@@ -23,39 +23,39 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/room")
 public class RoomController {
-    private final RoomService roomService;
+  private final RoomService roomService;
 
-    @PostMapping
-    public ApiResponse<Void> createRoom(@RequestBody CreateRoomRequest createRoomRequest) {
-        roomService.createNewRoom(createRoomRequest);
-        return ApiResponse.success();
-    }
+  @PostMapping
+  public ApiResponse<Void> createRoom(@RequestBody CreateRoomRequest createRoomRequest) {
+    roomService.createNewRoom(createRoomRequest);
+    return ApiResponse.success();
+  }
 
-    @GetMapping
-    public ApiResponse<RoomPageResponse> getRoomInfos(
-            @RequestParam int size, @RequestParam int page) {
-        PageRequest pageRequest = PageRequest.of(size, page, Sort.by("id"));
-        RoomPageResponse response = roomService.getRoomInfos(pageRequest);
-        return ApiResponse.success(response);
-    }
+  @GetMapping
+  public ApiResponse<RoomPageResponse> getRoomInfos(
+      @RequestParam int size, @RequestParam int page) {
+    PageRequest pageRequest = PageRequest.of(size, page, Sort.by("id"));
+    RoomPageResponse response = roomService.getRoomInfos(pageRequest);
+    return ApiResponse.success(response);
+  }
 
-    @GetMapping("/{roomId}")
-    public ApiResponse<RoomDetailInfoResponse> getRoomDetail(@PathVariable Integer roomId) {
-        RoomDetailInfoResponse response = roomService.getRoomDetailInfo(roomId);
-        return ApiResponse.success(response);
-    }
+  @GetMapping("/{roomId}")
+  public ApiResponse<RoomDetailInfoResponse> getRoomDetail(@PathVariable Integer roomId) {
+    RoomDetailInfoResponse response = roomService.getRoomDetailInfo(roomId);
+    return ApiResponse.success(response);
+  }
 
-    @PostMapping("/attention/{roomId}")
-    public ApiResponse<Void> joinRoom(
-            @PathVariable Integer roomId, @RequestBody UserInfoRequest userInfoRequest) {
-        roomService.joinRoom(roomId, userInfoRequest);
-        return ApiResponse.success();
-    }
+  @PostMapping("/attention/{roomId}")
+  public ApiResponse<Void> joinRoom(
+      @PathVariable Integer roomId, @RequestBody UserInfoRequest userInfoRequest) {
+    roomService.joinRoom(roomId, userInfoRequest);
+    return ApiResponse.success();
+  }
 
-    @PostMapping("/out/{roomId}")
-    public ApiResponse<Void> exitRoom(
-            @PathVariable Integer roomId, @RequestBody UserInfoRequest userInfoRequest) {
-        roomService.exitRoom(userInfoRequest.getUserId(), roomId);
-        return ApiResponse.success();
-    }
+  @PostMapping("/out/{roomId}")
+  public ApiResponse<Void> exitRoom(
+      @PathVariable Integer roomId, @RequestBody UserInfoRequest userInfoRequest) {
+    roomService.exitRoom(userInfoRequest.getUserId(), roomId);
+    return ApiResponse.success();
+  }
 }

@@ -17,13 +17,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
-    private final UserService userService;
+  private final UserService userService;
 
-    @GetMapping
-    public ApiResponse<UserPageResponse> getUserInfos(
-            @RequestParam int size, @RequestParam int page) {
-        PageRequest pageRequest = PageRequest.of(size, page, Sort.by("id"));
-        UserPageResponse response = userService.getUserInfos(pageRequest);
-        return ApiResponse.success(response);
-    }
+  @GetMapping
+  public ApiResponse<UserPageResponse> getUserInfos(
+      @RequestParam int size, @RequestParam int page) {
+    PageRequest pageRequest = PageRequest.of(size, page, Sort.by("id"));
+    UserPageResponse response = userService.getUserInfos(pageRequest);
+    return ApiResponse.success(response);
+  }
 }

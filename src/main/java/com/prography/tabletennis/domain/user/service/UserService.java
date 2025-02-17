@@ -21,30 +21,30 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserService {
-    private final UserRepository userRepository;
+  private final UserRepository userRepository;
 
-    public UserPageResponse getUserInfos(PageRequest pageRequest) {
-        Page<User> users = userRepository.findAll(pageRequest);
-        return UserPageResponse.from(users);
-    }
+  public UserPageResponse getUserInfos(PageRequest pageRequest) {
+    Page<User> users = userRepository.findAll(pageRequest);
+    return UserPageResponse.from(users);
+  }
 
-    public User getUserById(Integer userId) {
-        return userRepository
-                .findById(userId)
-                .orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
-    }
+  public User getUserById(Integer userId) {
+    return userRepository
+        .findById(userId)
+        .orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
+  }
 
-    @Transactional
-    public void saveFakeUsers(List<UserData> fakeUsers) {
-        List<User> sortedUserList =
-                fakeUsers.stream()
-                        .sorted(Comparator.comparingInt(UserData::getId))
-                        .map(UserData::toUser)
-                        .toList();
-        userRepository.saveAll(sortedUserList);
-    }
+  @Transactional
+  public void saveFakeUsers(List<UserData> fakeUsers) {
+    List<User> sortedUserList =
+        fakeUsers.stream()
+            .sorted(Comparator.comparingInt(UserData::getId))
+            .map(UserData::toUser)
+            .toList();
+    userRepository.saveAll(sortedUserList);
+  }
 
-    public void deleteAll() {
-        userRepository.deleteAll();
-    }
+  public void deleteAll() {
+    userRepository.deleteAll();
+  }
 }

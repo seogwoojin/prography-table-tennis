@@ -1,5 +1,7 @@
 package com.prography.tabletennis.domain.init.controller;
 
+import jakarta.annotation.PostConstruct;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,12 +18,17 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 public class InitController {
-    private final InitService initService;
+  private final InitService initService;
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<Void>> initializeData(
-            @RequestBody InitDataRequest initDataRequest) {
-        initService.initializeDatabase(initDataRequest);
-        return ResponseEntity.ok(ApiResponse.success());
-    }
+  @PostConstruct
+  public void init() {
+    initService.initializeDatabase(new InitDataRequest(3, 3));
+  }
+
+  @PostMapping
+  public ResponseEntity<ApiResponse<Void>> initializeData(
+      @RequestBody InitDataRequest initDataRequest) {
+    initService.initializeDatabase(initDataRequest);
+    return ResponseEntity.ok(ApiResponse.success());
+  }
 }

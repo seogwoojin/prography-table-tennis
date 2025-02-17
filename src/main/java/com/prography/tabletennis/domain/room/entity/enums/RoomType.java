@@ -4,12 +4,12 @@ import lombok.Getter;
 
 @Getter
 public enum RoomType {
-    SINGLE(2),
-    DOUBLE(4);
+  SINGLE(2),
+  DOUBLE(4);
 
-    final Integer value;
+  final Integer value;
 
-    RoomType(Integer value) {
-        this.value = value;
-    }
+  RoomType(Integer value) {
+    this.value = value;
+  }
 }

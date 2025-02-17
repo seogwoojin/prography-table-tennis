@@ -26,18 +26,18 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 public class UserRoom {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  Integer id;
 
-    @JoinColumn(name = "room_id", nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    Room room;
+  @JoinColumn(name = "room_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  Room room;
 
-    @JoinColumn(name = "user_id", nullable = false)
-    @OneToOne(fetch = FetchType.LAZY)
-    User user;
+  @JoinColumn(name = "user_id", nullable = false)
+  @OneToOne(fetch = FetchType.LAZY)
+  User user;
 
-    @Enumerated(value = EnumType.STRING)
-    TeamType teamType;
+  @Enumerated(value = EnumType.STRING)
+  TeamType teamType;
 }

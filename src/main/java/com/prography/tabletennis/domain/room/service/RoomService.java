@@ -26,72 +26,72 @@ import lombok.RequiredArgsConstructor;
 @Service
 @Transactional(readOnly = true)
 public class RoomService {
-    private final RoomRepository roomRepository;
-    private final UserService userService;
-    private final RoomValidator roomValidator;
-    private final UserRoomRepository userRoomRepository;
+  private final RoomRepository roomRepository;
+  private final UserService userService;
+  private final RoomValidator roomValidator;
+  private final UserRoomRepository userRoomRepository;
 
-    @Transactional
-    public void createNewRoom(CreateRoomRequest createRoomRequest) {
-        User user = userService.getUserById(createRoomRequest.getUserId());
-        roomValidator.validateUserIsEligibleForRoom(user);
-        Room room = roomRepository.save(createRoomRequest.toEntity());
-        UserRoom userRoom = UserRoom.builder().user(user).room(room).build();
-        userRoomRepository.save(userRoom);
+  @Transactional
+  public void createNewRoom(CreateRoomRequest createRoomRequest) {
+    User user = userService.getUserById(createRoomRequest.getUserId());
+    roomValidator.validateUserIsEligibleForRoom(user);
+    Room room = roomRepository.save(createRoomRequest.toEntity());
+    UserRoom userRoom = UserRoom.builder().user(user).room(room).build();
+    userRoomRepository.save(userRoom);
+  }
+
+  @Transactional
+  public void joinRoom(Integer roomId, UserInfoRequest userInfoRequest) {
+    User user = userService.getUserById(userInfoRequest.getUserId());
+    Room room =
+        roomRepository
+            .findById(roomId)
+            .orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
+    roomValidator.validateUserCanJoinRoom(user, room);
+    UserRoom userRoom = UserRoom.builder().user(user).room(room).build();
+    userRoomRepository.save(userRoom);
+  }
+
+  @Transactional
+  public void exitRoom(Integer userId, Integer roomId) {
+    User user = userService.getUserById(userId);
+    Room room = getRoomById(roomId);
+    roomValidator.validateUserCanExitRoom(user, room);
+
+    if (roomValidator.isUserRoomHost(user, room)) {
+      closeRoom(room);
+    } else {
+      userRoomRepository.delete(user.getUserRoom());
     }
+    user.exitRoom();
+  }
 
-    @Transactional
-    public void joinRoom(Integer roomId, UserInfoRequest userInfoRequest) {
-        User user = userService.getUserById(userInfoRequest.getUserId());
-        Room room =
-                roomRepository
-                        .findById(roomId)
-                        .orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
-        roomValidator.validateUserCanJoinRoom(user, room);
-        UserRoom userRoom = UserRoom.builder().user(user).room(room).build();
-        userRoomRepository.save(userRoom);
-    }
+  private void closeRoom(Room room) {
+    room.updateRoomStatus(RoomStatus.FINISH);
+    userRoomRepository.deleteAll(room.getUserRoomList());
+  }
 
-    @Transactional
-    public void exitRoom(Integer userId, Integer roomId) {
-        User user = userService.getUserById(userId);
-        Room room = getRoomById(roomId);
-        roomValidator.validateUserCanExitRoom(user, room);
+  public RoomPageResponse getRoomInfos(PageRequest pageRequest) {
+    Page<Room> rooms = roomRepository.findAll(pageRequest);
+    return RoomPageResponse.from(rooms);
+  }
 
-        if (roomValidator.isUserRoomHost(user, room)) {
-            closeRoom(room);
-        } else {
-            userRoomRepository.delete(user.getUserRoom());
-        }
-        user.exitRoom();
-    }
+  public RoomDetailInfoResponse getRoomDetailInfo(Integer roomId) {
+    Room room =
+        roomRepository
+            .findById(roomId)
+            .orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
+    return RoomDetailInfoResponse.from(room);
+  }
 
-    private void closeRoom(Room room) {
-        room.updateRoomStatus(RoomStatus.FINISH);
-        userRoomRepository.deleteAll(room.getUserRoomList());
-    }
+  private Room getRoomById(Integer roomId) {
+    return roomRepository
+        .findById(roomId)
+        .orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
+  }
 
-    public RoomPageResponse getRoomInfos(PageRequest pageRequest) {
-        Page<Room> rooms = roomRepository.findAll(pageRequest);
-        return RoomPageResponse.from(rooms);
-    }
-
-    public RoomDetailInfoResponse getRoomDetailInfo(Integer roomId) {
-        Room room =
-                roomRepository
-                        .findById(roomId)
-                        .orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
-        return RoomDetailInfoResponse.from(room);
-    }
-
-    private Room getRoomById(Integer roomId) {
-        return roomRepository
-                .findById(roomId)
-                .orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
-    }
-
-    @Transactional
-    public void deleteAll() {
-        roomRepository.deleteAll();
-    }
+  @Transactional
+  public void deleteAll() {
+    roomRepository.deleteAll();
+  }
 }

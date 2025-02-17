@@ -11,13 +11,13 @@ import com.prography.tabletennis.domain.init.service.FakerApiService;
 
 @SpringBootTest
 class FakerApiServiceTest {
-    @Autowired FakerApiService fakerApiService;
+  @Autowired FakerApiService fakerApiService;
 
-    @Test
-    public void APITest() {
-        FakerApiResponse fakeUsers = fakerApiService.getFakeUsers(1, 1);
+  @Test
+  public void APITest() {
+    FakerApiResponse fakeUsers = fakerApiService.getFakeUsers(1, 1);
 
-        assertThat(Integer.parseInt(fakeUsers.getSeed())).isEqualTo(1);
-        assertThat(fakeUsers.getUserDataList().size()).isEqualTo(1);
-    }
+    assertThat(Integer.parseInt(fakeUsers.getSeed())).isEqualTo(1);
+    assertThat(fakeUsers.getUserDataList().size()).isEqualTo(1);
+  }
 }
