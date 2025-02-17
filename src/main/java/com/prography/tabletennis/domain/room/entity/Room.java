@@ -3,6 +3,8 @@ package com.prography.tabletennis.domain.room.entity;
 import java.util.List;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -29,11 +31,19 @@ public class Room extends BaseTimeEntity {
 
     String title;
     Integer host;
+
+    @Enumerated(EnumType.STRING)
     RoomType roomType;
+
+    @Enumerated(EnumType.STRING)
     RoomStatus roomStatus;
 
     @OneToMany(mappedBy = "room")
     List<UserRoom> userRoomList;
+
+    public void updateRoomStatus(RoomStatus roomStatus) {
+        this.roomStatus = roomStatus;
+    }
 
     public boolean isFull() {
         if (this.roomType == RoomType.SINGLE && this.userRoomList.size() >= RoomType.SINGLE.value) {

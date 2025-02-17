@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.prography.tabletennis.domain.room.dto.request.CreateRoomRequest;
-import com.prography.tabletennis.domain.room.dto.request.JoinRoomRequest;
+import com.prography.tabletennis.domain.room.dto.request.UserInfoRequest;
 import com.prography.tabletennis.domain.room.dto.response.RoomDetailInfoResponse;
 import com.prography.tabletennis.domain.room.dto.response.RoomPageResponse;
 import com.prography.tabletennis.domain.room.service.RoomService;
@@ -47,8 +47,15 @@ public class RoomController {
 
     @PostMapping("/attention/{roomId}")
     public ApiResponse<Void> joinRoom(
-            @PathVariable Integer roomId, @RequestBody JoinRoomRequest joinRoomRequest) {
-        roomService.joinRoom(roomId, joinRoomRequest);
+            @PathVariable Integer roomId, @RequestBody UserInfoRequest userInfoRequest) {
+        roomService.joinRoom(roomId, userInfoRequest);
+        return ApiResponse.success();
+    }
+
+    @PostMapping("/out/{roomId}")
+    public ApiResponse<Void> exitRoom(
+            @PathVariable Integer roomId, @RequestBody UserInfoRequest userInfoRequest) {
+        roomService.exitRoom(userInfoRequest.getUserId(), roomId);
         return ApiResponse.success();
     }
 }

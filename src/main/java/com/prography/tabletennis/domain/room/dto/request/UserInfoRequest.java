@@ -6,6 +6,6 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class JoinRoomRequest {
+public class UserInfoRequest {
     private Integer userId;
 }

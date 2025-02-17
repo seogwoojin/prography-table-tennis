@@ -38,7 +38,11 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     UserStatus userStatus;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true)
     UserRoom userRoom;
 
     @Builder
@@ -53,5 +57,9 @@ public class User extends BaseTimeEntity {
         // Cascade 설정에 의해 자동으로 저장됨
         UserRoom newUserRoom = UserRoom.builder().user(this).room(room).build();
         this.userRoom = newUserRoom;
+    }
+
+    public void removeUserRoom() {
+        this.userRoom = null;
     }
 }
