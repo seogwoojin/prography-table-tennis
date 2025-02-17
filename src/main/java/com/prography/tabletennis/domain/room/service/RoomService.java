@@ -31,26 +31,25 @@ public class RoomService {
   private final RoomValidator roomValidator;
   private final UserRoomRepository userRoomRepository;
 
-  @Transactional
-  public void createNewRoom(CreateRoomRequest createRoomRequest) {
-    User user = userService.getUserById(createRoomRequest.getUserId());
-    roomValidator.validateUserIsEligibleForRoom(user);
-    Room room = roomRepository.save(createRoomRequest.toEntity());
-    UserRoom userRoom = UserRoom.builder().user(user).room(room).build();
-    userRoomRepository.save(userRoom);
-  }
+	@Transactional
+	public void createNewRoom(CreateRoomRequest createRoomRequest) {
+		User user = userService.getUserById(createRoomRequest.getUserId());
+		roomValidator.validateUserIsEligibleForRoom(user);
 
-  @Transactional
-  public void joinRoom(Integer roomId, UserInfoRequest userInfoRequest) {
-    User user = userService.getUserById(userInfoRequest.getUserId());
-    Room room =
-        roomRepository
-            .findById(roomId)
-            .orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
-    roomValidator.validateUserCanJoinRoom(user, room);
-    UserRoom userRoom = UserRoom.builder().user(user).room(room).build();
-    userRoomRepository.save(userRoom);
-  }
+		Room room = roomRepository.save(createRoomRequest.toEntity());
+		UserRoom userRoom = UserRoom.builder().user(user).room(room).build();
+		userRoomRepository.save(userRoom);
+	}
+
+	@Transactional
+	public void joinRoom(Integer roomId, UserInfoRequest userInfoRequest) {
+		User user = userService.getUserById(userInfoRequest.getUserId());
+		Room room = getRoomById(roomId);
+		roomValidator.validateUserCanJoinRoom(user, room);
+
+		UserRoom userRoom = UserRoom.builder().user(user).room(room).build();
+		userRoomRepository.save(userRoom);
+	}
 
   @Transactional
   public void exitRoom(Integer userId, Integer roomId) {
@@ -76,13 +75,10 @@ public class RoomService {
     return RoomPageResponse.from(rooms);
   }
 
-  public RoomDetailInfoResponse getRoomDetailInfo(Integer roomId) {
-    Room room =
-        roomRepository
-            .findById(roomId)
-            .orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
-    return RoomDetailInfoResponse.from(room);
-  }
+	public RoomDetailInfoResponse getRoomDetailInfo(Integer roomId) {
+		Room room = getRoomById(roomId);
+		return RoomDetailInfoResponse.from(room);
+	}
 
   private Room getRoomById(Integer roomId) {
     return roomRepository
