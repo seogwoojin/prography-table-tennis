@@ -102,4 +102,12 @@ public class RoomService {
   public void deleteAll() {
     roomRepository.deleteAll();
   }
+
+  public void startGame(Integer userId, Integer roomId) {
+    User user = userService.getUserById(userId);
+    Room room = getRoomById(roomId);
+    roomValidator.validateStartGame(user, room);
+
+    // Todo: 게임 60초간 진행 구현
+  }
 }
