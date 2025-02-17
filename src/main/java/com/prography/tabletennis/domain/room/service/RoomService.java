@@ -1,7 +1,5 @@
 package com.prography.tabletennis.domain.room.service;
 
-import java.util.List;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -12,11 +10,12 @@ import com.prography.tabletennis.domain.room.dto.request.UserInfoRequest;
 import com.prography.tabletennis.domain.room.dto.response.RoomDetailInfoResponse;
 import com.prography.tabletennis.domain.room.dto.response.RoomPageResponse;
 import com.prography.tabletennis.domain.room.entity.Room;
-import com.prography.tabletennis.domain.room.entity.RoomStatus;
+import com.prography.tabletennis.domain.room.entity.UserRoom;
+import com.prography.tabletennis.domain.room.entity.enums.RoomStatus;
 import com.prography.tabletennis.domain.room.repository.RoomRepository;
+import com.prography.tabletennis.domain.room.repository.UserRoomRepository;
 import com.prography.tabletennis.domain.room.utils.RoomValidator;
 import com.prography.tabletennis.domain.user.entity.User;
-import com.prography.tabletennis.domain.user.entity.UserRoom;
 import com.prography.tabletennis.domain.user.service.UserService;
 import com.prography.tabletennis.global.response.CustomException;
 import com.prography.tabletennis.global.response.ReturnCode;
@@ -30,13 +29,15 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final UserService userService;
     private final RoomValidator roomValidator;
+    private final UserRoomRepository userRoomRepository;
 
     @Transactional
     public void createNewRoom(CreateRoomRequest createRoomRequest) {
         User user = userService.getUserById(createRoomRequest.getUserId());
         roomValidator.validateUserIsEligibleForRoom(user);
         Room room = roomRepository.save(createRoomRequest.toEntity());
-        user.addUserRoom(room);
+        UserRoom userRoom = UserRoom.builder().user(user).room(room).build();
+        userRoomRepository.save(userRoom);
     }
 
     @Transactional
@@ -47,7 +48,8 @@ public class RoomService {
                         .findById(roomId)
                         .orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
         roomValidator.validateUserCanJoinRoom(user, room);
-        user.addUserRoom(room);
+        UserRoom userRoom = UserRoom.builder().user(user).room(room).build();
+        userRoomRepository.save(userRoom);
     }
 
     @Transactional
@@ -57,16 +59,16 @@ public class RoomService {
         roomValidator.validateUserCanExitRoom(user, room);
 
         if (roomValidator.isUserRoomHost(user, room)) {
-            room.updateRoomStatus(RoomStatus.FINISH);
-            exitAllUsersInRoom(room);
-            return;
+            closeRoom(room);
+        } else {
+            userRoomRepository.delete(user.getUserRoom());
         }
-        user.removeUserRoom();
+        user.exitRoom();
     }
 
-    private void exitAllUsersInRoom(Room room) {
-        List<UserRoom> userRoomList = room.getUserRoomList();
-        userRoomList.forEach(userRoom -> userRoom.getUser().removeUserRoom());
+    private void closeRoom(Room room) {
+        room.updateRoomStatus(RoomStatus.FINISH);
+        userRoomRepository.deleteAll(room.getUserRoomList());
     }
 
     public RoomPageResponse getRoomInfos(PageRequest pageRequest) {
