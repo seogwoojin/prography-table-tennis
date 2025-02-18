@@ -1,15 +1,6 @@
 package com.prography.tabletennis.domain.room.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 import com.prography.tabletennis.domain.room.entity.enums.TeamType;
 import com.prography.tabletennis.domain.user.entity.User;
@@ -23,21 +14,28 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Builder
-@Entity
+@Entity(name = "user_room")
 public class UserRoom {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Integer id;
 
-  @JoinColumn(name = "room_id", nullable = false)
+  @JoinColumn(name = "room_id", referencedColumnName = "room_id", nullable = false)
   @ManyToOne(fetch = FetchType.LAZY)
   Room room;
 
-  @JoinColumn(name = "user_id", nullable = false)
+  @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
   @OneToOne(fetch = FetchType.LAZY)
   User user;
 
   @Enumerated(value = EnumType.STRING)
+  @Column(name = "team")
   TeamType teamType;
+
+  @Builder
+  public UserRoom(Room room, User user, TeamType teamType) {
+    this.room = room;
+    this.user = user;
+    this.teamType = teamType;
+  }
 }

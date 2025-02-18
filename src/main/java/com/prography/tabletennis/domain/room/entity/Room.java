@@ -3,14 +3,7 @@ package com.prography.tabletennis.domain.room.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import com.prography.tabletennis.domain.room.entity.enums.RoomStatus;
 import com.prography.tabletennis.domain.room.entity.enums.RoomType;
@@ -25,36 +18,36 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-@Entity
+@Entity(name = "room")
 public class Room extends BaseTimeEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "room_id")
   Integer id;
 
+  @Column(name = "title")
   String title;
+
+  @Column(name = "host", nullable = false)
   Integer host;
 
   @Enumerated(EnumType.STRING)
+  @Column(name = "room_type", nullable = false)
   RoomType roomType;
 
   @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
   RoomStatus roomStatus;
 
   @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, orphanRemoval = true)
   List<UserRoom> userRoomList = new ArrayList<>();
 
   @Builder
-  public Room(
-      String title,
-      Integer host,
-      RoomType roomType,
-      RoomStatus roomStatus,
-      List<UserRoom> userRoomList) {
+  public Room(String title, Integer host, RoomType roomType, RoomStatus roomStatus) {
     this.title = title;
     this.host = host;
     this.roomType = roomType;
     this.roomStatus = roomStatus;
-    this.userRoomList = userRoomList;
   }
 
   public void updateRoomStatus(RoomStatus roomStatus) {
