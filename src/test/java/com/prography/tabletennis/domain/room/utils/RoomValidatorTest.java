@@ -2,6 +2,7 @@ package com.prography.tabletennis.domain.room.utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 import java.util.List;
@@ -38,7 +39,7 @@ class RoomValidatorTest {
     when(user.getUserRoom()).thenReturn(null);
 
     // when & then
-    roomValidator.validateUserIsEligibleForRoom(user);
+    roomValidator.validateUserIsCanCreateRoom(user);
   }
 
   @Test
@@ -49,7 +50,7 @@ class RoomValidatorTest {
     when(user.getUserStatus()).thenReturn(UserStatus.WAIT);
 
     // then
-    assertThatThrownBy(() -> roomValidator.validateUserIsEligibleForRoom(user))
+    assertThatThrownBy(() -> roomValidator.validateUserIsCanCreateRoom(user))
         .isInstanceOf(CustomException.class)
         .hasMessageContaining(ReturnCode.WRONG_REQUEST.getMessage());
   }
@@ -62,7 +63,7 @@ class RoomValidatorTest {
     when(user.getUserStatus()).thenReturn(UserStatus.ACTIVE);
     when(user.getUserRoom()).thenReturn(mock(UserRoom.class));
     // then
-    assertThatThrownBy(() -> roomValidator.validateUserIsEligibleForRoom(user))
+    assertThatThrownBy(() -> roomValidator.validateUserIsCanCreateRoom(user))
         .isInstanceOf(CustomException.class)
         .hasMessageContaining(ReturnCode.WRONG_REQUEST.getMessage());
   }
@@ -172,7 +173,7 @@ class RoomValidatorTest {
     boolean result = roomValidator.isUserRoomHost(user, room);
 
     // then
-    assertThat(result).isFalse();
+    assertFalse(result);
   }
 
   @Test

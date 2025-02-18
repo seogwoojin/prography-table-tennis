@@ -11,7 +11,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.prography.tabletennis.domain.room.dto.request.CreateRoomRequest;
-import com.prography.tabletennis.domain.room.entity.Room;
 import com.prography.tabletennis.domain.room.entity.UserRoom;
 import com.prography.tabletennis.domain.room.entity.enums.RoomType;
 import com.prography.tabletennis.domain.room.repository.RoomRepository;
@@ -37,12 +36,12 @@ class RoomServiceTest {
   @DisplayName("유저는 방을 두개 이상 생성할 수 없다.")
   public void createRoomServiceTest() {
     // Given
-    User mockUser = User.builder().userStatus(UserStatus.ACTIVE).build();
-    Room mockRoom = Room.builder().title("기존 방").build();
-    UserRoom userRoom = UserRoom.builder().user(mockUser).room(mockRoom).build();
+    User mockUser = mock(User.class);
+    UserRoom userRoom = mock(UserRoom.class);
     CreateRoomRequest createRoomRequest = new CreateRoomRequest(1, RoomType.SINGLE, "새로운 방");
     when(userService.getUserById(1)).thenReturn(mockUser);
-    doNothing().when(roomValidator).validateUserIsEligibleForRoom(mockUser);
+    when(mockUser.getUserRoom()).thenReturn(userRoom);
+    doNothing().when(roomValidator).validateUserIsCanCreateRoom(mockUser);
 
     // When, Then
     assertThatThrownBy(() -> roomService.createNewRoom(createRoomRequest))
