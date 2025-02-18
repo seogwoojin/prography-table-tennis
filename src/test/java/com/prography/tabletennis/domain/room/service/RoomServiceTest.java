@@ -41,7 +41,7 @@ class RoomServiceTest {
     CreateRoomRequest createRoomRequest = new CreateRoomRequest(1, RoomType.SINGLE, "새로운 방");
     when(userService.getUserById(1)).thenReturn(mockUser);
     when(mockUser.getUserRoom()).thenReturn(userRoom);
-    doNothing().when(roomValidator).validateUserIsCanCreateRoom(mockUser);
+    doNothing().when(roomValidator).validateUserCanCreateRoom(mockUser);
 
     // When, Then
     assertThatThrownBy(() -> roomService.createNewRoom(createRoomRequest))

@@ -39,7 +39,7 @@ class RoomValidatorTest {
     when(user.getUserRoom()).thenReturn(null);
 
     // when & then
-    roomValidator.validateUserIsCanCreateRoom(user);
+    roomValidator.validateUserCanCreateRoom(user);
   }
 
   @Test
@@ -50,7 +50,7 @@ class RoomValidatorTest {
     when(user.getUserStatus()).thenReturn(UserStatus.WAIT);
 
     // then
-    assertThatThrownBy(() -> roomValidator.validateUserIsCanCreateRoom(user))
+    assertThatThrownBy(() -> roomValidator.validateUserCanCreateRoom(user))
         .isInstanceOf(CustomException.class)
         .hasMessageContaining(ReturnCode.WRONG_REQUEST.getMessage());
   }
@@ -63,7 +63,7 @@ class RoomValidatorTest {
     when(user.getUserStatus()).thenReturn(UserStatus.ACTIVE);
     when(user.getUserRoom()).thenReturn(mock(UserRoom.class));
     // then
-    assertThatThrownBy(() -> roomValidator.validateUserIsCanCreateRoom(user))
+    assertThatThrownBy(() -> roomValidator.validateUserCanCreateRoom(user))
         .isInstanceOf(CustomException.class)
         .hasMessageContaining(ReturnCode.WRONG_REQUEST.getMessage());
   }

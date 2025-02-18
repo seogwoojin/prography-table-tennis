@@ -18,6 +18,7 @@ import com.prography.tabletennis.domain.room.dto.response.RoomPageResponse;
 import com.prography.tabletennis.domain.room.entity.Room;
 import com.prography.tabletennis.domain.room.entity.UserRoom;
 import com.prography.tabletennis.domain.room.entity.enums.RoomStatus;
+import com.prography.tabletennis.domain.room.entity.enums.TeamType;
 import com.prography.tabletennis.domain.room.repository.RoomRepository;
 import com.prography.tabletennis.domain.room.repository.UserRoomRepository;
 import com.prography.tabletennis.domain.room.utils.RoomValidator;
@@ -46,16 +47,10 @@ public class RoomService {
   @Transactional
   public void createNewRoom(CreateRoomRequest createRoomRequest) {
     User user = userService.getUserById(createRoomRequest.getUserId());
-    roomValidator.validateUserIsCanCreateRoom(user);
+    roomValidator.validateUserCanCreateRoom(user);
 
     Room room = roomRepository.save(createRoomRequest.toEntity());
-    UserRoom userRoom =
-        UserRoom.builder()
-            .user(user)
-            .room(room)
-            .teamType(teamAssignmentService.assignTeam(room))
-            .build();
-    userRoomRepository.save(userRoom);
+    createAndSaveUserRoom(user, room);
   }
 
   @Transactional
@@ -64,13 +59,7 @@ public class RoomService {
     Room room = getRoomById(roomId);
     roomValidator.validateUserCanJoinRoom(user, room);
 
-    UserRoom userRoom =
-        UserRoom.builder()
-            .user(user)
-            .room(room)
-            .teamType(teamAssignmentService.assignTeam(room))
-            .build();
-    userRoomRepository.save(userRoom);
+    createAndSaveUserRoom(user, room);
   }
 
   @Transactional
@@ -80,16 +69,29 @@ public class RoomService {
     roomValidator.validateUserCanExitRoom(user, room);
 
     if (roomValidator.isUserRoomHost(user, room)) {
-      closeRoom(room);
+      gameService.finishGame(room);
     } else {
       userRoomRepository.delete(user.getUserRoom());
     }
     user.exitRoom();
   }
 
-  private void closeRoom(Room room) {
-    room.updateRoomStatus(RoomStatus.FINISH);
-    userRoomRepository.deleteAll(room.getUserRoomList());
+  /**
+   * 게임을 시작하는 함수입니다. 조건을 만족할 때, 게임을 실행할 수 있습니다. 게임이 실행되면 Scheduler 쓰레드를 활용해 60초 뒤에 게임을 종료할 수 있습니다.
+   *
+   * @param userId
+   * @param roomId
+   */
+  @Transactional
+  public void startGame(Integer userId, Integer roomId) {
+    User user = userService.getUserById(userId);
+    Room room = getRoomById(roomId);
+    roomValidator.validateStartGame(user, room);
+
+    room.updateRoomStatus(RoomStatus.PROGRESS);
+    taskScheduler.schedule(
+        () -> gameService.finishGame(room),
+        Instant.now().plus(GAME_PROGRESS_TIME, ChronoUnit.SECONDS));
   }
 
   public RoomPageResponse getRoomInfos(PageRequest pageRequest) {
@@ -102,30 +104,20 @@ public class RoomService {
     return RoomDetailInfoResponse.from(room);
   }
 
+  @Transactional
+  public void deleteAll() {
+    roomRepository.deleteAll();
+  }
+
   private Room getRoomById(Integer roomId) {
     return roomRepository
         .findById(roomId)
         .orElseThrow(() -> new CustomException(ReturnCode.WRONG_REQUEST));
   }
 
-  @Transactional
-  public void deleteAll() {
-    roomRepository.deleteAll();
-  }
-
-  @Transactional
-  public void startGame(Integer userId, Integer roomId) {
-    User user = userService.getUserById(userId);
-    Room room = getRoomById(roomId);
-    roomValidator.validateStartGame(user, room);
-
-    room.updateRoomStatus(RoomStatus.PROGRESS);
-    roomRepository.save(room);
-
-    taskScheduler.schedule(
-        () -> {
-          gameService.finishGame(room);
-        },
-        Instant.now().plus(GAME_PROGRESS_TIME, ChronoUnit.SECONDS));
+  private void createAndSaveUserRoom(User user, Room room) {
+    TeamType assignTeam = teamAssignmentService.assignTeam(room);
+    UserRoom userRoom = UserRoom.builder().user(user).room(room).teamType(assignTeam).build();
+    userRoomRepository.save(userRoom);
   }
 }
