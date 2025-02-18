@@ -7,9 +7,9 @@ import lombok.Getter;
 @Getter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ApiResponse<T> {
-  private final Integer code;
-  private final String message;
-  private final T result;
+  private Integer code;
+  private String message;
+  private T result;
 
   private ApiResponse(Integer code, String message, T data) {
     this.code = code;
@@ -26,11 +26,7 @@ public class ApiResponse<T> {
   }
 
   public static <T> ApiResponse<T> fail(ReturnCode returnCode) {
-    return fail(returnCode, null);
-  }
-
-  public static <T> ApiResponse<T> fail(ReturnCode returnCode, T data) {
-    return new ApiResponse<>(returnCode.getCode(), returnCode.getMessage(), data);
+    return new ApiResponse<>(returnCode.getCode(), returnCode.getMessage(), null);
   }
 
   public static <T> ApiResponse<T> error(ReturnCode returnCode) {
