@@ -16,23 +16,23 @@ import lombok.NoArgsConstructor;
 public class RoomPageResponse {
   Integer totalElements;
   Integer totalPages;
-  List<RoomInfoResponse> userList;
+  List<RoomInfoResponse> roomList;
 
   @Builder
   public RoomPageResponse(
-      Integer totalElements, Integer totalPages, List<RoomInfoResponse> userList) {
+      Integer totalElements, Integer totalPages, List<RoomInfoResponse> roomList) {
     this.totalElements = totalElements;
     this.totalPages = totalPages;
-    this.userList = userList;
+    this.roomList = roomList;
   }
 
   public static RoomPageResponse from(Page<Room> rooms) {
-    List<RoomInfoResponse> userList =
+    List<RoomInfoResponse> roomList =
         rooms.getContent().stream().map(RoomInfoResponse::from).toList();
     return RoomPageResponse.builder()
         .totalPages(rooms.getTotalPages())
         .totalElements(Math.toIntExact(rooms.getTotalElements()))
-        .userList(userList)
+        .roomList(roomList)
         .build();
   }
 }
