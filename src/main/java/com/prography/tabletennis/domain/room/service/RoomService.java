@@ -1,7 +1,13 @@
 package com.prography.tabletennis.domain.room.service;
 
+import static com.prography.tabletennis.domain.room.utils.GameConstants.GAME_PROGRESS_TIME;
+
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,9 +28,11 @@ import com.prography.tabletennis.global.response.CustomException;
 import com.prography.tabletennis.global.response.ReturnCode;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 public class RoomService {
   private final RoomRepository roomRepository;
@@ -32,11 +40,13 @@ public class RoomService {
   private final RoomValidator roomValidator;
   private final UserRoomRepository userRoomRepository;
   private final TeamAssignmentService teamAssignmentService;
+  private final TaskScheduler taskScheduler;
+  private final GameService gameService;
 
   @Transactional
   public void createNewRoom(CreateRoomRequest createRoomRequest) {
     User user = userService.getUserById(createRoomRequest.getUserId());
-    roomValidator.validateUserIsEligibleForRoom(user);
+    roomValidator.validateUserIsCanCreateRoom(user);
 
     Room room = roomRepository.save(createRoomRequest.toEntity());
     UserRoom userRoom =
@@ -103,11 +113,19 @@ public class RoomService {
     roomRepository.deleteAll();
   }
 
+  @Transactional
   public void startGame(Integer userId, Integer roomId) {
     User user = userService.getUserById(userId);
     Room room = getRoomById(roomId);
     roomValidator.validateStartGame(user, room);
 
-    // Todo: 게임 60초간 진행 구현
+    room.updateRoomStatus(RoomStatus.PROGRESS);
+    roomRepository.save(room);
+
+    taskScheduler.schedule(
+        () -> {
+          gameService.finishGame(room);
+        },
+        Instant.now().plus(GAME_PROGRESS_TIME, ChronoUnit.SECONDS));
   }
 }

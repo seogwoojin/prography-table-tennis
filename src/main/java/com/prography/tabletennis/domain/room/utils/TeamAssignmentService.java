@@ -50,6 +50,7 @@ public class TeamAssignmentService {
   private TeamType selectTeam(Map<TeamType, Long> teamCounts, int maxPerTeam) {
     long redCount = teamCounts.getOrDefault(TeamType.RED, 0L);
     long blueCount = teamCounts.getOrDefault(TeamType.BLUE, 0L);
+
     // 두 팀 모두 여유가 있는 경우 Red 팀 선택
     if (redCount < maxPerTeam && blueCount < maxPerTeam) {
       return TeamType.RED;

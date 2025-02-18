@@ -19,7 +19,7 @@ public class RoomValidator {
   private final TeamAssignmentService teamAssignmentService;
 
   /** 사용자가 방 참여 가능한지(활성화 상태 + 다른 방에 속해있지 않은지) 검증 */
-  public void validateUserIsEligibleForRoom(User user) {
+  public void validateUserIsCanCreateRoom(User user) {
     if (user.getUserStatus() != UserStatus.ACTIVE || user.getUserRoom() != null) {
       throw new CustomException(ReturnCode.WRONG_REQUEST);
     }
@@ -28,7 +28,7 @@ public class RoomValidator {
   /** 방 참여 시 추가로 필요한 검증 로직 */
   public void validateUserCanJoinRoom(User user, Room room) {
     validateRoomStatus(room);
-    validateUserIsEligibleForRoom(user);
+    validateUserIsCanCreateRoom(user);
     validateRoomIsNotFull(room);
   }
 
@@ -62,7 +62,9 @@ public class RoomValidator {
   }
 
   public void validateStartGame(User user, Room room) {
-    isUserRoomHost(user, room);
+    if (!isUserRoomHost(user, room)) {
+      throw new CustomException(ReturnCode.WRONG_REQUEST);
+    }
     validateRoomStatus(room);
     if (!teamAssignmentService.isEachTeamFull(room)) {
       throw new CustomException(ReturnCode.WRONG_REQUEST);

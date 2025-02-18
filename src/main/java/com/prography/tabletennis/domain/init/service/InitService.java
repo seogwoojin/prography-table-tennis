@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.prography.tabletennis.domain.init.dto.request.InitDataRequest;
 import com.prography.tabletennis.domain.init.dto.response.FakerApiResponse;
+import com.prography.tabletennis.domain.room.repository.UserRoomRepository;
 import com.prography.tabletennis.domain.room.service.RoomService;
 import com.prography.tabletennis.domain.user.service.UserService;
 
@@ -17,6 +18,7 @@ public class InitService {
   private final UserService userService;
   private final RoomService roomService;
   private final FakerApiService fakerApiService;
+  private final UserRoomRepository userRoomRepository;
 
   @Transactional
   public void initializeDatabase(InitDataRequest initDataRequest) {
@@ -28,6 +30,7 @@ public class InitService {
   }
 
   private void deleteAllColumn() {
+    userRoomRepository.deleteAll();
     userService.deleteAll();
     roomService.deleteAll();
   }

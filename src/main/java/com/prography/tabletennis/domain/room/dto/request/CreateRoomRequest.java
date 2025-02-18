@@ -17,7 +17,7 @@ public class CreateRoomRequest {
   @Schema(name = "userId", example = "1")
   private Integer userId;
 
-  @Schema(name = "roomType", example = "1")
+  @Schema(name = "roomType", example = "SINGLE")
   private RoomType roomType;
 
   @Schema(name = "title", example = "새로운 방")
