@@ -1,4 +1,4 @@
-package com.prography.tabletennis.domain.init.dto.request;
+package com.prography.tabletennis.domain.Initialization.dto.request;
 
 import lombok.Getter;
 

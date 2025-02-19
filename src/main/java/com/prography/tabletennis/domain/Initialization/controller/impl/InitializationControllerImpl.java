@@ -1,13 +1,13 @@
-package com.prography.tabletennis.domain.init.controller.impl;
+package com.prography.tabletennis.domain.Initialization.controller.impl;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.prography.tabletennis.domain.init.controller.InitController;
-import com.prography.tabletennis.domain.init.dto.request.InitDataRequest;
-import com.prography.tabletennis.domain.init.service.InitService;
+import com.prography.tabletennis.domain.Initialization.controller.InitializationController;
+import com.prography.tabletennis.domain.Initialization.dto.request.InitDataRequest;
+import com.prography.tabletennis.domain.Initialization.service.InitializationService;
 import com.prography.tabletennis.global.response.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -15,12 +15,12 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/init")
 @RestController
 @RequiredArgsConstructor
-public class InitControllerImpl implements InitController {
-  private final InitService initService;
+public class InitializationControllerImpl implements InitializationController {
+  private final InitializationService initializationService;
 
   @PostMapping
   public ApiResponse<Void> initializeData(@RequestBody InitDataRequest initDataRequest) {
-    initService.initializeDatabase(initDataRequest);
+    initializationService.initializeDatabase(initDataRequest);
     return ApiResponse.success();
   }
 }

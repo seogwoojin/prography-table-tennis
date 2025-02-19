@@ -1,10 +1,10 @@
-package com.prography.tabletennis.domain.init.service;
+package com.prography.tabletennis.global.external;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.prography.tabletennis.domain.init.dto.response.FakerApiResponse;
+import com.prography.tabletennis.domain.Initialization.dto.response.FakerApiResponse;
 
 @FeignClient(name = "FakerApi", url = "https://fakerapi.it")
 public interface FakerApiService {

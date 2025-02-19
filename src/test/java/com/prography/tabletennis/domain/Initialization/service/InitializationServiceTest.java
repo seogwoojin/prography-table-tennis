@@ -1,4 +1,4 @@
-package com.prography.tabletennis.domain.init.service;
+package com.prography.tabletennis.domain.Initialization.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 
@@ -7,9 +7,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
 
-import com.prography.tabletennis.domain.init.dto.request.InitDataRequest;
+import com.prography.tabletennis.domain.Initialization.dto.request.InitDataRequest;
 import com.prography.tabletennis.domain.room.entity.Room;
 import com.prography.tabletennis.domain.room.entity.UserRoom;
 import com.prography.tabletennis.domain.room.entity.enums.RoomType;
@@ -19,7 +18,7 @@ import com.prography.tabletennis.domain.user.entity.User;
 import com.prography.tabletennis.domain.user.repository.UserRepository;
 
 @SpringBootTest
-class InitServiceTest {
+class InitializationServiceTest {
 
   @Autowired UserRepository userRepository;
 
@@ -27,10 +26,9 @@ class InitServiceTest {
 
   @Autowired RoomRepository roomRepository;
 
-  @Autowired InitService initService;
+  @Autowired InitializationService initializationService;
 
   @Test
-  @Transactional
   public void initTest() {
     // given
     User testUser = User.builder().build();
@@ -41,7 +39,7 @@ class InitServiceTest {
     userRoomRepository.save(testUserRoom);
 
     // when
-    initService.initializeDatabase(new InitDataRequest(1, 5));
+    initializationService.initializeDatabase(new InitDataRequest(1, 5));
 
     // then
     List<User> userList = userRepository.findAll();

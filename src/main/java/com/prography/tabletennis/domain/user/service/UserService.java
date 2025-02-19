@@ -8,7 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.prography.tabletennis.domain.init.dto.response.UserData;
+import com.prography.tabletennis.domain.Initialization.dto.response.UserData;
 import com.prography.tabletennis.domain.user.dto.response.UserPageResponse;
 import com.prography.tabletennis.domain.user.entity.User;
 import com.prography.tabletennis.domain.user.repository.UserRepository;

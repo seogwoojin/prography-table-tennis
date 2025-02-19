@@ -1,4 +1,4 @@
-package com.prography.tabletennis.domain.init.dto.response;
+package com.prography.tabletennis.domain.Initialization.dto.response;
 
 import java.util.List;
 

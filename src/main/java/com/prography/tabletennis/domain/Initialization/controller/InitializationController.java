@@ -1,6 +1,6 @@
-package com.prography.tabletennis.domain.init.controller;
+package com.prography.tabletennis.domain.Initialization.controller;
 
-import com.prography.tabletennis.domain.init.dto.request.InitDataRequest;
+import com.prography.tabletennis.domain.Initialization.dto.request.InitDataRequest;
 import com.prography.tabletennis.global.response.ApiResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "Init API", description = "DB 초기화 관련 API")
-public interface InitController {
+public interface InitializationController {
   @Operation(
       summary = "DB 초기화",
       description = "Table의 모든 데이터를 삭제하고, Seed, Quantity에 맞는 회원 정보를 저장",

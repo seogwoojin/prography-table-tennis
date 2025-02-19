@@ -1,4 +1,4 @@
-package com.prography.tabletennis.domain.init.dto.response;
+package com.prography.tabletennis.domain.Initialization.dto.response;
 
 import com.prography.tabletennis.domain.user.entity.User;
 import com.prography.tabletennis.domain.user.entity.enums.UserStatus;
