@@ -1,8 +1,8 @@
 package com.prography.tabletennis.domain.init.dto.response;
 
-import com.prography.tabletennis.domain.init.utils.UserStatusUtil;
 import com.prography.tabletennis.domain.user.entity.User;
 import com.prography.tabletennis.domain.user.entity.enums.UserStatus;
+import com.prography.tabletennis.domain.user.utils.UserStatusUtil;
 
 import lombok.Getter;
 

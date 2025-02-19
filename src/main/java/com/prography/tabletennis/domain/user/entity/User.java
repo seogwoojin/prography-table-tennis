@@ -1,11 +1,6 @@
 package com.prography.tabletennis.domain.user.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 import com.prography.tabletennis.domain.room.entity.UserRoom;
 import com.prography.tabletennis.domain.user.entity.enums.UserStatus;
@@ -18,28 +13,29 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity(name = "users")
+@Entity
+@Table(name = "users")
 public class User extends BaseTimeEntity {
   @Id
   @Column(name = "user_id")
-  Integer id;
+  private Integer id;
 
   @Column(name = "faker_id")
-  Integer fakerId;
+  private Integer fakerId;
 
   @Column(name = "name")
-  String name;
+  private String name;
 
   @Column(name = "email")
-  String email;
+  private String email;
 
   @Column(name = "status")
   @Enumerated(EnumType.STRING)
-  UserStatus userStatus;
+  private UserStatus userStatus;
 
   // OneToOne 관계에서 주인이 아닌 엔티티는 FetchType.LAZY로 동작하지 않는다.
-  @OneToOne(mappedBy = "user") // FetchType.LAZY
-  UserRoom userRoom;
+  @OneToOne(mappedBy = "user")
+  private UserRoom userRoom;
 
   @Builder
   public User(Integer fakerId, String name, String email, UserStatus userStatus) {

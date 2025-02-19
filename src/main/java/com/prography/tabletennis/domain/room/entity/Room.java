@@ -10,37 +10,36 @@ import com.prography.tabletennis.domain.room.entity.enums.RoomType;
 import com.prography.tabletennis.global.entity.BaseTimeEntity;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Entity(name = "room")
+@Entity
+@Table(name = "room")
 public class Room extends BaseTimeEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "room_id")
-  Integer id;
+  private Integer id;
 
   @Column(name = "title")
-  String title;
+  private String title;
 
   @Column(name = "host", nullable = false)
-  Integer host;
+  private Integer host;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "room_type", nullable = false)
-  RoomType roomType;
+  private RoomType roomType;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "status", nullable = false)
-  RoomStatus roomStatus;
+  private RoomStatus roomStatus;
 
   @OneToMany(mappedBy = "room", fetch = FetchType.LAZY, orphanRemoval = true)
-  List<UserRoom> userRoomList = new ArrayList<>();
+  private List<UserRoom> userRoomList = new ArrayList<>();
 
   @Builder
   public Room(String title, Integer host, RoomType roomType, RoomStatus roomStatus) {
@@ -55,13 +54,6 @@ public class Room extends BaseTimeEntity {
   }
 
   public boolean isFull() {
-    if (this.roomType == RoomType.SINGLE
-        && this.userRoomList.size() == this.roomType.getCapacity()) {
-      return true;
-    } else if (this.roomType == RoomType.DOUBLE
-        && this.userRoomList.size() >= this.roomType.getCapacity()) {
-      return true;
-    }
-    return false;
+    return this.roomType.isFull(this.userRoomList.size());
   }
 }

@@ -7,9 +7,13 @@ public enum RoomType {
   SINGLE(2),
   DOUBLE(4);
 
-  final Integer capacity;
+  final int capacity;
 
-  RoomType(Integer capacity) {
+  RoomType(int capacity) {
     this.capacity = capacity;
+  }
+
+  public boolean isFull(int userCount) {
+    return userCount >= capacity;
   }
 }
