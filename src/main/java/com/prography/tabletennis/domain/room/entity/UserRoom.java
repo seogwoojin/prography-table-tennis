@@ -38,4 +38,12 @@ public class UserRoom {
     this.user = user;
     this.teamType = teamType;
   }
+
+  public void changeTeam() {
+    if (this.teamType == TeamType.BLUE) {
+      this.teamType = TeamType.RED;
+      return;
+    }
+    this.teamType = TeamType.BLUE;
+  }
 }

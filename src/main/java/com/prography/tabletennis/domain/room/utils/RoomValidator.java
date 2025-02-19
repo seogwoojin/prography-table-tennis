@@ -27,7 +27,7 @@ public class RoomValidator {
 
   /** 방 참여 시 추가로 필요한 검증 로직 */
   public void validateUserCanJoinRoom(User user, Room room) {
-    validateRoomStatus(room);
+    validateRoomStatusIsWait(room);
     validateUserCanCreateRoom(user);
     validateRoomIsNotFull(room);
   }
@@ -41,14 +41,14 @@ public class RoomValidator {
 
   public void validateUserCanExitRoom(User user, Room room) {
     validateUserInRoom(user, room);
-    validateRoomStatus(room);
+    validateRoomStatusIsWait(room);
   }
 
   public boolean isUserRoomHost(User user, Room room) {
     return room.getHost().equals(user.getId());
   }
 
-  private void validateRoomStatus(Room room) {
+  private void validateRoomStatusIsWait(Room room) {
     if (room.getRoomStatus() != RoomStatus.WAIT) {
       throw new CustomException(ReturnCode.WRONG_REQUEST);
     }
@@ -61,12 +61,26 @@ public class RoomValidator {
     }
   }
 
+  /**
+   * 유저가 Host인지, 방의 상태가 WAIT이며 팀별로 정원이 꽉 찼는지 모두 확인하는 함수
+   *
+   * @param user
+   * @param room
+   */
   public void validateStartGame(User user, Room room) {
     if (!isUserRoomHost(user, room)) {
       throw new CustomException(ReturnCode.WRONG_REQUEST);
     }
-    validateRoomStatus(room);
+    validateRoomStatusIsWait(room);
     if (!teamAssignmentService.isEachTeamFull(room)) {
+      throw new CustomException(ReturnCode.WRONG_REQUEST);
+    }
+  }
+
+  public void validateChangeTeam(User user, Room room) {
+    validateRoomStatusIsWait(room);
+    validateUserInRoom(user, room);
+    if (!teamAssignmentService.changeTeamPossible(room, user.getUserRoom().getTeamType())) {
       throw new CustomException(ReturnCode.WRONG_REQUEST);
     }
   }

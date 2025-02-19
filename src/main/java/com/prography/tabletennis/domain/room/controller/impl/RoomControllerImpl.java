@@ -43,7 +43,7 @@ public class RoomControllerImpl implements RoomController {
   @PostMapping("/attention/{roomId}")
   public ApiResponse<Void> joinRoom(
       @PathVariable Integer roomId, @RequestBody UserInfoRequest userInfoRequest) {
-    roomService.joinRoom(roomId, userInfoRequest);
+    roomService.joinRoom(userInfoRequest.getUserId(), roomId);
     return ApiResponse.success();
   }
 
@@ -58,6 +58,13 @@ public class RoomControllerImpl implements RoomController {
   public ApiResponse<Void> startGame(
       @PathVariable Integer roomId, @RequestBody UserInfoRequest userInfoRequest) {
     roomService.startGame(userInfoRequest.getUserId(), roomId);
+    return ApiResponse.success();
+  }
+
+  @PutMapping("/{roomId}")
+  public ApiResponse<Void> changeTeam(
+      @PathVariable Integer roomId, @RequestBody UserInfoRequest userInfoRequest) {
+    roomService.changeTeam(userInfoRequest.getUserId(), roomId);
     return ApiResponse.success();
   }
 }

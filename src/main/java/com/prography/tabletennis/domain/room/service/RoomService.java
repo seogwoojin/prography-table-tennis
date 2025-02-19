@@ -1,9 +1,7 @@
 package com.prography.tabletennis.domain.room.service;
 
-import static com.prography.tabletennis.domain.room.utils.GameConstants.GAME_PROGRESS_TIME;
-
+import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.prography.tabletennis.domain.room.dto.request.CreateRoomRequest;
-import com.prography.tabletennis.domain.room.dto.request.UserInfoRequest;
 import com.prography.tabletennis.domain.room.dto.response.RoomDetailInfoResponse;
 import com.prography.tabletennis.domain.room.dto.response.RoomPageResponse;
 import com.prography.tabletennis.domain.room.entity.Room;
@@ -54,8 +51,17 @@ public class RoomService {
   }
 
   @Transactional
-  public void joinRoom(Integer roomId, UserInfoRequest userInfoRequest) {
-    User user = userService.getUserById(userInfoRequest.getUserId());
+  public void changeTeam(Integer userId, Integer roomId) {
+    User user = userService.getUserById(userId);
+    Room room = getRoomById(roomId);
+    roomValidator.validateChangeTeam(user, room);
+
+    user.getUserRoom().changeTeam();
+  }
+
+  @Transactional
+  public void joinRoom(Integer userId, Integer roomId) {
+    User user = userService.getUserById(userId);
     Room room = getRoomById(roomId);
     roomValidator.validateUserCanJoinRoom(user, room);
 
@@ -90,8 +96,7 @@ public class RoomService {
 
     room.updateRoomStatus(RoomStatus.PROGRESS);
     taskScheduler.schedule(
-        () -> gameService.finishGame(room),
-        Instant.now().plus(GAME_PROGRESS_TIME, ChronoUnit.SECONDS));
+        () -> gameService.finishGame(room), Instant.now().plus(Duration.ofSeconds(60)));
   }
 
   public RoomPageResponse getRoomInfos(PageRequest pageRequest) {

@@ -28,6 +28,21 @@ public class TeamAssignmentService {
     return redCount == maxPerTeam && blueCount == maxPerTeam;
   }
 
+  public boolean changeTeamPossible(Room room, TeamType presentTeam) {
+    List<UserRoom> userRooms = room.getUserRoomList();
+    Map<TeamType, Long> teamCounts = countTeamMembers(userRooms);
+    int maxPerTeam = calculateMaxPerTeam(room.getRoomType());
+    TeamType wishTeam = getWishTeam(presentTeam);
+    return teamCounts.get(wishTeam) < maxPerTeam;
+  }
+
+  private TeamType getWishTeam(TeamType teamType) {
+    if (teamType == TeamType.RED) {
+      return TeamType.BLUE;
+    }
+    return TeamType.RED;
+  }
+
   public TeamType assignTeam(Room room) {
     List<UserRoom> userRooms = room.getUserRoomList();
     Map<TeamType, Long> teamCounts = countTeamMembers(userRooms);
