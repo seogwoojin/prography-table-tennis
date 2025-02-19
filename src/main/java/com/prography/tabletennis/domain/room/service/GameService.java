@@ -1,6 +1,6 @@
 package com.prography.tabletennis.domain.room.service;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +23,7 @@ public class GameService {
   /** 새로운 트랜잭션 내에서 게임 종료 처리를 수행합니다. */
   @Transactional
   public void finishGame(Room room) {
-    log.info("{}번 방 게임 종료 - 종료 시간 : {} ", room.getId(), Instant.now());
+    log.info("{}번 방 게임 종료 - 종료 시간 : {} ", room.getId(), LocalDateTime.now());
     room.updateRoomStatus(RoomStatus.FINISH);
     userRoomRepository.deleteAll(room.getUserRoomList());
     roomRepository.save(room);
