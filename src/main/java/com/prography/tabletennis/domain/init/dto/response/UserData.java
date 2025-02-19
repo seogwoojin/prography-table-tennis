@@ -2,6 +2,7 @@ package com.prography.tabletennis.domain.init.dto.response;
 
 import com.prography.tabletennis.domain.init.utils.UserStatusUtil;
 import com.prography.tabletennis.domain.user.entity.User;
+import com.prography.tabletennis.domain.user.entity.enums.UserStatus;
 
 import lombok.Getter;
 
@@ -20,11 +21,7 @@ public class UserData {
   private String image;
 
   public User toUser() {
-    return User.builder()
-        .fakerId(id)
-        .name(username)
-        .email(email)
-        .userStatus(UserStatusUtil.getUserStatusFromId(id))
-        .build();
+    UserStatus userStatus = UserStatusUtil.getUserStatusFromId(id);
+    return User.builder().fakerId(id).name(username).email(email).userStatus(userStatus).build();
   }
 }
