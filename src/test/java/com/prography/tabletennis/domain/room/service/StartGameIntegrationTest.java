@@ -4,7 +4,6 @@ import static com.prography.tabletennis.domain.room.utils.GameConstants.GAME_PRO
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 import java.time.Duration;
 import java.util.List;
@@ -15,8 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.prography.tabletennis.domain.init.dto.request.InitDataRequest;
-import com.prography.tabletennis.domain.init.service.InitService;
+import com.prography.tabletennis.domain.Initialization.dto.request.InitDataRequest;
+import com.prography.tabletennis.domain.Initialization.service.InitializationService;
 import com.prography.tabletennis.domain.room.dto.request.CreateRoomRequest;
 import com.prography.tabletennis.domain.room.entity.Room;
 import com.prography.tabletennis.domain.room.entity.enums.RoomStatus;
@@ -29,9 +28,9 @@ import com.prography.tabletennis.domain.user.repository.UserRepository;
 
 /** Start Game -> Single Double Test 클래스입니다. */
 @SpringBootTest
-public class StartGameTest {
+public class StartGameIntegrationTest {
   @Autowired private RoomRepository roomRepository;
-  @Autowired private InitService initService;
+  @Autowired private InitializationService initializationService;
   @Autowired private RoomValidator roomValidator;
 
   @Autowired private UserRepository userRepository;
@@ -41,7 +40,7 @@ public class StartGameTest {
 
   @BeforeEach
   public void initData() {
-    initService.initializeDatabase(new InitDataRequest(1, 6));
+    initializationService.initializeDatabase(new InitDataRequest(1, 6));
   }
 
   @Test
@@ -55,10 +54,11 @@ public class StartGameTest {
     Integer testRoomId = rooms.get(0).getId();
     roomService.joinRoom(joinUser.getId(), testRoomId);
 
+    // when
     roomService.startGame(hostUser.getId(), 1);
 
     // Then
-    // 여기서는 Awaitility를 사용해 풀링을 통해 room_1 상태가 FINISH로 변경되는지 확인합니다.
+    // Awaitility를 사용, 50초 이후 1초에 한번 씩 풀링을 통해, room 상태가 FINISH로 변경되는지 확인합니다.
     await()
         .atMost(Duration.ofSeconds(GAME_PROGRESS_TIME + 5))
         .pollInterval(1000, TimeUnit.MILLISECONDS)
@@ -92,10 +92,9 @@ public class StartGameTest {
     assertThat(roomRepository.findById(testRoom.getId()).get().getRoomStatus())
         .isEqualTo(RoomStatus.PROGRESS);
 
-    // Awaitility를 사용해 1초에 한번 씩 풀링을 통해, room 상태가 FINISH로 변경되는지 확인합니다.
     await()
+        .pollDelay(Duration.ofSeconds(50))
         .atMost(Duration.ofSeconds(GAME_PROGRESS_TIME + 5))
-        .pollInterval(1000, TimeUnit.MILLISECONDS)
         .until(
             () ->
                 roomService.getRoomDetailInfo(testRoom.getId()).getRoomStatus()
