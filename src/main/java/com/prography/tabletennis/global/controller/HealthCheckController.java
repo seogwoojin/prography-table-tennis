@@ -1,6 +1,5 @@
 package com.prography.tabletennis.global.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,7 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Health")
 public class HealthCheckController {
   @GetMapping
-  public ResponseEntity<ApiResponse<Void>> checkServerHealth() {
-    return ResponseEntity.ok(ApiResponse.success());
+  public ApiResponse<Void> checkServerHealth() {
+    return ApiResponse.success();
   }
 }
