@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.prography.tabletennis.domain.init.dto.response.FakerApiResponse;
-import com.prography.tabletennis.domain.init.service.FakerApiService;
+import com.prography.tabletennis.domain.Initialization.dto.response.FakerApiResponse;
+import com.prography.tabletennis.global.external.FakerApiService;
 
 @SpringBootTest
 class FakerApiServiceTest {

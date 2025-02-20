@@ -6,11 +6,13 @@ import com.prography.tabletennis.domain.room.entity.enums.RoomType;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class CreateRoomRequest {
   @Schema(name = "userId", example = "1")
   private Integer userId;
