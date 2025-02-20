@@ -13,6 +13,7 @@ import com.prography.tabletennis.domain.room.repository.UserRoomRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+/** 게임 시작 이후를 담당하는 클래스 */
 @Service
 @AllArgsConstructor
 @Slf4j

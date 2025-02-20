@@ -39,6 +39,6 @@ public class UserRoom {
   }
 
   public void changeTeam() {
-    this.teamType = this.teamType.changeTeam();
+    this.teamType = this.teamType.getOppositeTeam();
   }
 }

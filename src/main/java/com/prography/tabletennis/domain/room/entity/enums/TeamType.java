@@ -4,7 +4,7 @@ public enum TeamType {
   RED,
   BLUE;
 
-  public TeamType changeTeam() {
+  public TeamType getOppositeTeam() {
     if (this == TeamType.RED) {
       return TeamType.BLUE;
     }
