@@ -1,11 +1,14 @@
 package com.prography.tabletennis.domain.room.utils;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,134 +25,118 @@ class TeamAssignmentServiceTest {
 
   @Autowired private TeamAssignmentService teamAssignmentService;
 
-  /** RoomType의 capacity에 따라 팀 당 최대 인원은 capacity / 2 입니다. 예를 들어, capacity가 4이면 팀 당 최대 인원은 2명입니다. */
+  // Room과 관련된 공통 생성 로직을 헬퍼 메서드로 분리
+  private Room createMockRoom(RoomType roomType, List<UserRoom> userRooms) {
+    Room room = Mockito.mock(Room.class);
+    when(room.getRoomType()).thenReturn(roomType);
+    when(room.getUserRoomList()).thenReturn(userRooms);
+    return room;
+  }
+
+  // 특정 팀 타입의 UserRoom을 생성하는 헬퍼 메서드
+  private UserRoom createUserRoom(TeamType teamType) {
+    UserRoom userRoom = Mockito.mock(UserRoom.class);
+    when(userRoom.getTeamType()).thenReturn(teamType);
+    return userRoom;
+  }
+
+  @DisplayName("각 팀 인원이 최대 인원 미만인 경우 팀이 꽉 차지 않음")
   @Test
   void testIsEachTeamFull_NotFull() {
-    // capacity 4 -> 각 팀 최대 인원은 2
-    Room room = Mockito.mock(Room.class);
-    RoomType roomType = Mockito.mock(RoomType.class);
-    when(roomType.getCapacity()).thenReturn(4);
-    when(room.getRoomType()).thenReturn(roomType);
+    // given
+    List<UserRoom> userRooms = List.of(createUserRoom(TeamType.RED));
+    Room room = createMockRoom(RoomType.SINGLE, userRooms);
 
-    // 1명의 RED와 1명의 BLUE가 있는 경우 -> full 아님
-    UserRoom redUser = Mockito.mock(UserRoom.class);
-    when(redUser.getTeamType()).thenReturn(TeamType.RED);
-    UserRoom blueUser = Mockito.mock(UserRoom.class);
-    when(blueUser.getTeamType()).thenReturn(TeamType.BLUE);
-    List<UserRoom> userRooms = Arrays.asList(redUser, blueUser);
-    when(room.getUserRoomList()).thenReturn(userRooms);
-
+    // when
     boolean isFull = teamAssignmentService.isEachTeamFull(room);
-    assertFalse(isFull, "팀이 꽉 차지 않았으므로 false여야 합니다.");
+
+    // then
+    assertFalse(isFull);
   }
 
+  @DisplayName("각 팀 인원이 최대 인원에 도달한 경우 팀이 꽉 참")
   @Test
   void testIsEachTeamFull_Full() {
-    // capacity 4 -> 각 팀 최대 인원은 2
-    Room room = Mockito.mock(Room.class);
-    RoomType roomType = Mockito.mock(RoomType.class);
-    when(roomType.getCapacity()).thenReturn(4);
-    when(room.getRoomType()).thenReturn(roomType);
+    // given
+    List<UserRoom> userRooms =
+        List.of(
+            createUserRoom(TeamType.RED),
+            createUserRoom(TeamType.RED),
+            createUserRoom(TeamType.BLUE),
+            createUserRoom(TeamType.BLUE));
+    Room room = createMockRoom(RoomType.DOUBLE, userRooms);
 
-    // RED 2명, BLUE 2명 -> full
-    UserRoom red1 = Mockito.mock(UserRoom.class);
-    when(red1.getTeamType()).thenReturn(TeamType.RED);
-    UserRoom red2 = Mockito.mock(UserRoom.class);
-    when(red2.getTeamType()).thenReturn(TeamType.RED);
-    UserRoom blue1 = Mockito.mock(UserRoom.class);
-    when(blue1.getTeamType()).thenReturn(TeamType.BLUE);
-    UserRoom blue2 = Mockito.mock(UserRoom.class);
-    when(blue2.getTeamType()).thenReturn(TeamType.BLUE);
-    List<UserRoom> userRooms = Arrays.asList(red1, red2, blue1, blue2);
-    when(room.getUserRoomList()).thenReturn(userRooms);
-
+    // when
     boolean isFull = teamAssignmentService.isEachTeamFull(room);
-    assertTrue(isFull, "각 팀이 최대 인원에 도달했으므로 true여야 합니다.");
+
+    // then
+    assertTrue(isFull);
   }
 
+  @DisplayName("두 팀 모두 여유 있는 경우 기본적으로 RED 팀 할당")
   @Test
   void testAssignTeam_BothAvailable() {
-    // capacity 4 -> 각 팀 최대 인원은 2
-    Room room = Mockito.mock(Room.class);
-    RoomType roomType = Mockito.mock(RoomType.class);
-    when(roomType.getCapacity()).thenReturn(4);
-    when(room.getRoomType()).thenReturn(roomType);
+    // given
+    List<UserRoom> userRooms = List.of(createUserRoom(TeamType.RED));
+    Room room = createMockRoom(RoomType.DOUBLE, userRooms);
 
-    // RED 1명만 존재하면 두 팀 모두 여유가 있으므로 기본값인 RED 할당
-    UserRoom redUser = Mockito.mock(UserRoom.class);
-    when(redUser.getTeamType()).thenReturn(TeamType.RED);
-    List<UserRoom> userRooms = Arrays.asList(redUser);
-    when(room.getUserRoomList()).thenReturn(userRooms);
-
+    // when
     TeamType assigned = teamAssignmentService.assignTeam(room);
-    assertEquals(TeamType.RED, assigned, "여유가 있는 경우 기본적으로 RED팀이 할당되어야 합니다.");
+
+    // then
+    assertThat(assigned).isEqualTo(TeamType.RED);
   }
 
+  @DisplayName("RED 팀이 꽉 찬 경우 BLUE 팀 할당")
   @Test
   void testAssignTeam_RedFull() {
-    // capacity 4 -> 각 팀 최대 인원은 2
-    Room room = Mockito.mock(Room.class);
-    RoomType roomType = Mockito.mock(RoomType.class);
-    when(roomType.getCapacity()).thenReturn(4);
-    when(room.getRoomType()).thenReturn(roomType);
+    // given
+    List<UserRoom> userRooms =
+        Arrays.asList(
+            createUserRoom(TeamType.RED),
+            createUserRoom(TeamType.RED),
+            createUserRoom(TeamType.BLUE));
+    Room room = createMockRoom(RoomType.DOUBLE, userRooms);
 
-    // RED팀에 이미 2명(최대 인원), BLUE팀은 1명 -> BLUE 할당되어야 함
-    UserRoom red1 = Mockito.mock(UserRoom.class);
-    when(red1.getTeamType()).thenReturn(TeamType.RED);
-    UserRoom red2 = Mockito.mock(UserRoom.class);
-    when(red2.getTeamType()).thenReturn(TeamType.RED);
-    UserRoom blueUser = Mockito.mock(UserRoom.class);
-    when(blueUser.getTeamType()).thenReturn(TeamType.BLUE);
-    List<UserRoom> userRooms = Arrays.asList(red1, red2, blueUser);
-    when(room.getUserRoomList()).thenReturn(userRooms);
-
+    // when
     TeamType assigned = teamAssignmentService.assignTeam(room);
-    assertEquals(TeamType.BLUE, assigned, "RED팀이 꽉 찼으므로 BLUE팀이 할당되어야 합니다.");
+
+    // then
+    assertThat(assigned).isEqualTo(TeamType.BLUE);
   }
 
+  @DisplayName("BLUE 팀이 꽉 찬 경우 RED 팀 할당")
   @Test
   void testAssignTeam_BlueFull() {
-    // capacity 4 -> 각 팀 최대 인원은 2
-    Room room = Mockito.mock(Room.class);
-    RoomType roomType = Mockito.mock(RoomType.class);
-    when(roomType.getCapacity()).thenReturn(4);
-    when(room.getRoomType()).thenReturn(roomType);
+    // given
+    List<UserRoom> userRooms =
+        List.of(
+            createUserRoom(TeamType.BLUE),
+            createUserRoom(TeamType.BLUE),
+            createUserRoom(TeamType.RED));
+    Room room = createMockRoom(RoomType.DOUBLE, userRooms);
 
-    // BLUE팀에 이미 2명(최대 인원), RED팀은 1명 -> RED 할당되어야 함
-    UserRoom blue1 = Mockito.mock(UserRoom.class);
-    when(blue1.getTeamType()).thenReturn(TeamType.BLUE);
-    UserRoom blue2 = Mockito.mock(UserRoom.class);
-    when(blue2.getTeamType()).thenReturn(TeamType.BLUE);
-    UserRoom redUser = Mockito.mock(UserRoom.class);
-    when(redUser.getTeamType()).thenReturn(TeamType.RED);
-    List<UserRoom> userRooms = Arrays.asList(blue1, blue2, redUser);
-    when(room.getUserRoomList()).thenReturn(userRooms);
-
+    // when
     TeamType assigned = teamAssignmentService.assignTeam(room);
-    assertEquals(TeamType.RED, assigned, "BLUE팀이 꽉 찼으므로 RED팀이 할당되어야 합니다.");
+
+    // then
+    assertThat(assigned).isEqualTo(TeamType.RED);
   }
 
+  @DisplayName("두 팀 모두 꽉 찬 경우 예외 발생")
   @Test
   void testAssignTeam_BothFull_ThrowsException() {
-    // capacity 4 -> 각 팀 최대 인원은 2
-    Room room = Mockito.mock(Room.class);
-    RoomType roomType = Mockito.mock(RoomType.class);
-    when(roomType.getCapacity()).thenReturn(4);
-    when(room.getRoomType()).thenReturn(roomType);
+    // given
+    List<UserRoom> userRooms =
+        List.of(
+            createUserRoom(TeamType.RED),
+            createUserRoom(TeamType.RED),
+            createUserRoom(TeamType.BLUE),
+            createUserRoom(TeamType.BLUE));
+    Room room = createMockRoom(RoomType.DOUBLE, userRooms);
 
-    // 두 팀 모두 꽉 찬 경우 (RED 2명, BLUE 2명)
-    UserRoom red1 = Mockito.mock(UserRoom.class);
-    when(red1.getTeamType()).thenReturn(TeamType.RED);
-    UserRoom red2 = Mockito.mock(UserRoom.class);
-    when(red2.getTeamType()).thenReturn(TeamType.RED);
-    UserRoom blue1 = Mockito.mock(UserRoom.class);
-    when(blue1.getTeamType()).thenReturn(TeamType.BLUE);
-    UserRoom blue2 = Mockito.mock(UserRoom.class);
-    when(blue2.getTeamType()).thenReturn(TeamType.BLUE);
-    List<UserRoom> userRooms = Arrays.asList(red1, red2, blue1, blue2);
-    when(room.getUserRoomList()).thenReturn(userRooms);
-
-    // assignTeam() 호출 시 CustomException이 발생해야 함
-    assertThrows(CustomException.class, () -> teamAssignmentService.assignTeam(room));
+    // when, then
+    assertThatThrownBy(() -> teamAssignmentService.assignTeam(room))
+        .isInstanceOf(CustomException.class);
   }
 }
