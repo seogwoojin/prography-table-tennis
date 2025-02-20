@@ -139,4 +139,60 @@ class TeamAssignmentServiceTest {
     assertThatThrownBy(() -> teamAssignmentService.assignTeam(room))
         .isInstanceOf(CustomException.class);
   }
+
+  @DisplayName("상대팀이 정원이 모두 찬 경우, 방을 옮길 수 없음")
+  @Test
+  void testAssignTeam_ChangeTeamPossible_IsFalse() {
+    // given
+    List<UserRoom> userRooms =
+        List.of(
+            createUserRoom(TeamType.BLUE),
+            createUserRoom(TeamType.BLUE),
+            createUserRoom(TeamType.RED));
+    Room room = createMockRoom(RoomType.DOUBLE, userRooms);
+
+    // when, then
+    boolean possible = teamAssignmentService.changeTeamPossible(room, TeamType.RED);
+    assertFalse(possible);
+  }
+
+  @DisplayName("상대팀이 정원이 모두 차지 않은 경우, 방을 옮길 수 있음")
+  @Test
+  void testAssignTeam_ChangeTeamPossible_IsTrue() {
+    // given
+    List<UserRoom> userRooms =
+        List.of(
+            createUserRoom(TeamType.BLUE),
+            createUserRoom(TeamType.RED),
+            createUserRoom(TeamType.RED));
+    Room room = createMockRoom(RoomType.DOUBLE, userRooms);
+
+    // when, then
+    boolean possible = teamAssignmentService.changeTeamPossible(room, TeamType.RED);
+    assertTrue(possible);
+  }
+
+  @DisplayName("상대팀이 정원이 모두 차지 않은 경우, 방을 옮길 수 있음_SINGLE")
+  @Test
+  void testAssignTeam_ChangeTeamPossible_IsTrue_SINGLE() {
+    // given
+    List<UserRoom> userRooms = List.of(createUserRoom(TeamType.RED));
+    Room room = createMockRoom(RoomType.SINGLE, userRooms);
+
+    // when, then
+    boolean possible = teamAssignmentService.changeTeamPossible(room, TeamType.RED);
+    assertTrue(possible);
+  }
+
+  @DisplayName("상대팀이 정원이 모두 찬 경우, 방을 옮길 수 없음_SINGLE")
+  @Test
+  void testAssignTeam_ChangeTeamPossible_IsFalse_SINGLE() {
+    // given
+    List<UserRoom> userRooms = List.of(createUserRoom(TeamType.RED), createUserRoom(TeamType.BLUE));
+    Room room = createMockRoom(RoomType.SINGLE, userRooms);
+
+    // when, then
+    boolean possible = teamAssignmentService.changeTeamPossible(room, TeamType.RED);
+    assertFalse(possible);
+  }
 }
