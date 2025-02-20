@@ -97,6 +97,8 @@
 - [X] 게임 시작이 가능한 경우, 방의 상태를 PROGRESS로 변경한다.
 - [X] 게임 시작이 된 방은 1분 뒤 종료 상태로 변경되며 참여자들은 모두 ACTIVE 상태가 된다.
 
+<br>
+
 ### 💻 커밋 컨벤션
 
 > [**AngularJS 커밋 컨벤션**](https://gist.github.com/stephenparish/9941e89d80e2bc58a153) 참고
@@ -110,6 +112,8 @@
 | refactor | 코드 리팩토링          |
 | test     | 테스트 추가 및 수정      |
 | chore    | 빌드 작업 및 도구 관련 변경 |
+
+<br>
 
 ### ❓ 구현 과정에서 고민했던 부분
 
@@ -130,4 +134,82 @@
 ScheduledExecutorService 만큼의 저수준의 스케줄링 제어의 필요성을 느끼지 못했고,
 스프링 환경 위에선 빈 기반 TaskScheduler를 사용하는 것이 자연스럽다고 생각했습니다.
 
-하지만 60초 간, 트랜잭션 외부에서 대기한다는 점에서 실제 환경이라면 Room, UserRoom에 Lock 을 고려할 것 같습니다.
+하지만 60초 간, 트랜잭션 외부에서 대기한다는 점에서 실제 환경이라면 Room, UserRoom이 변경되는 것에 주의해야할 것 같습니다.
+
+<br>
+
+2️⃣ 통합 테스트에서 @Transactional을 제거한 이유
+
+```
+  @Test
+  @DisplayName("호스트가 방을 나가면 방의 상태가 종료로 변하고, 내부 참가자들은 모두 방을 나간다.")
+  // @Transactional
+  void host_exitRoom_success() {
+    List<User> users = userRepository.findAll();
+    User host = users.get(0);
+    User guest = users.get(1);
+    roomService.createNewRoom(new CreateRoomRequest(host.getId(), RoomType.SINGLE, "TEST"));
+    Room room = roomRepository.findAll().get(0);
+    roomService.joinRoom(guest.getId(), room.getId());
+
+    roomService.exitRoom(host.getId(), room.getId());
+    
+    Room afterRoom = roomRepository.findById(room.getId()).get();
+    User afterGuest = userRepository.findById(guest.getId()).get();
+    
+    assertThat(afterRoom.getRoomStatus()).isEqualTo(RoomStatus.FINISH);
+    assertThat(afterRoom.getUserRoomList().size()).isEqualTo(0);
+    assertNull(afterGuest.getUserRoom());
+```
+
+문제 상황 -> test 함수에 Transactional을 달 경우, roomService 내부 Transactional들이 제대로 작동하지 않았습니다.
+
+특히 동일한 영속성 컨텍스트를 공유하는 상황에서 더티 체킹이 이뤄지지 않았습니다.
+
+![img.png](readme_images/img.png)
+
+디버깅 모드로 exitRoomTest 호출 시) 정상적인 테스트 흐름이라면 exitRoom()을 호출하는 시점 user에는 userRoom 1개, room에서는 host, guest UserRoom 2개가 있어야
+합니다.
+
+따라서 예상하지 못한 곳에서 예외가 발생했습니다.
+
+Transactional을 제거) 내부 트랜잭션이 각각 작동하며 원하는 흐름을 연출하는 데는 성공했습니다.
+
+![img_1.png](readme_images/img_1.png)
+![img_2.png](readme_images/img_2.png)
+
+하지만, 함수 내 트랜잭션을 적용하지 못해 UserRoomList을 가져올 때, LazyInitializationException이 발생했습니다.
+
+![img.png](readme_images/img4.png)
+
+내부 로직에 손대지 않고, 테스트 내에서 해결하는 방안은 다음과 같았습니다.
+
+1) 내부 Transactional 함수를 따로 뽑는다.
+
+=> 불가능합니다. 내부 함수 호출은 프록시 객체를 호출하지 않아서 적용이 되지 않음
+
+2) 트랜잭션을 위한 테스트 전용 헬퍼 객체 생성
+
+=> 가능하나, 하나의 테스트를 위해 헬퍼 클래스를 만들기 비효율적이고 더 좋은 방식이 있었습니다.
+
+참고한 글 : https://cl8d.tistory.com/120
+
+3) TransactionTemplate 활용
+
+=> 스프링에서 제공하는 TransactionTemplate을 사용한다면 함수 내부에서, 트랜잭션 영역을 어렵지 않게 생성할 수 있었습니다.
+
+```
+    transactionTemplate.executeWithoutResult(
+        status -> {
+          Room afterRoom = roomRepository.findById(room.getId()).get();
+          User afterGuest = userRepository.findById(guest.getId()).get();
+
+          assertThat(afterRoom.getRoomStatus()).isEqualTo(RoomStatus.FINISH);
+          assertThat(afterRoom.getUserRoomList().size()).isEqualTo(0);
+          assertNull(afterGuest.getUserRoom());
+        });
+```
+
+![img_3.png](readme_images/img_3.png)
+
+결과적으로 각 트랜잭션이 독립적으로 적용되는 통합 테스트를 작성할 수 있었습니다.
