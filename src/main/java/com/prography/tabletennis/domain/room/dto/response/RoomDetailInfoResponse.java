@@ -3,6 +3,7 @@ package com.prography.tabletennis.domain.room.dto.response;
 import static com.prography.tabletennis.global.utils.GlobalConstant.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.prography.tabletennis.domain.room.entity.Room;
 import com.prography.tabletennis.domain.room.entity.enums.RoomStatus;
 import com.prography.tabletennis.domain.room.entity.enums.RoomType;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@JsonPropertyOrder({"id", "title", "hostId", "roomType", "status", "createdAt", "updatedAt"})
 public class RoomDetailInfoResponse {
   Integer id;
   String title;

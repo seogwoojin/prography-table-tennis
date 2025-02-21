@@ -2,6 +2,8 @@ package com.prography.tabletennis.domain.user.dto.response;
 
 import static com.prography.tabletennis.global.utils.GlobalConstant.*;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.prography.tabletennis.domain.user.entity.User;
 import com.prography.tabletennis.domain.user.entity.enums.UserStatus;
 
@@ -12,12 +14,16 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@JsonPropertyOrder({"id", "fakerId", "name", "email", "status", "createdAt", "updatedAt"})
 public class UserInfoResponse {
   Integer id;
   Integer fakerId;
   String name;
   String email;
+
+  @JsonProperty("status")
   UserStatus userStatus;
+
   String createdAt;
   String updatedAt;
 
