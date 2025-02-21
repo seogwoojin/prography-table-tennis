@@ -60,11 +60,4 @@ public class RoomControllerImpl implements RoomController {
     roomService.startGame(userInfoRequest.getUserId(), roomId);
     return ApiResponse.success();
   }
-
-  @PutMapping("/{roomId}")
-  public ApiResponse<Void> changeTeam(
-      @PathVariable Integer roomId, @RequestBody UserInfoRequest userInfoRequest) {
-    roomService.changeTeam(userInfoRequest.getUserId(), roomId);
-    return ApiResponse.success();
-  }
 }
