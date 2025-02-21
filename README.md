@@ -117,14 +117,14 @@
 
 ### ❓ 구현 과정에서 고민했던 부분
 
-1️⃣ 게임 시작이 된 방을 1분뒤 종료 상태로 변경하는 설계
+**1️⃣ 게임 시작이 된 방을 1분뒤 종료 상태로 변경하는 설계**
 
-(1) 요청 쓰레드에서 Thread.sleep() 을 사용하여 60초간 대기한다.
+**(1) 요청 쓰레드에서 Thread.sleep() 을 사용하여 60초간 대기한다.**
 
 - 트랜잭션이 보장될 수 있음
 - 응답 속도가 비정상적
 
-(2) 새로운 쓰레드를 비동기적으로 실행하고, 요청 쓰레드의 블락을 피한다.
+**(2) 새로운 쓰레드를 비동기적으로 실행하고, 요청 쓰레드의 블락을 피한다.**
 
 - Spring에서 제공하는 TaskScheduler 사용 (권장)
 - Java에서 제공하는 ScheduledExecutorService 사용
@@ -132,7 +132,7 @@
 ScheduledExecutorService 만큼의 저수준의 스케줄링 제어의 필요성을 느끼지 못했고,
 스프링 환경 위에선 빈 기반 TaskScheduler를 사용하는 것이 자연스럽다고 생각했습니다.
 
-(3) 1~5초 이내 간격으로 배치 작업 수행
+**(3) 1~5초 이내 간격으로 배치 작업 수행**
 
 스케줄러를 통해 방의 상태가 PROGRESS이며, 컬럼 update_at이 1분 이상 경과한 컬럼들을 모두 조회하여,
 상태를 업데이트 해주는 방법
@@ -148,7 +148,7 @@ ScheduledExecutorService 만큼의 저수준의 스케줄링 제어의 필요성
 
 <br>
 
-2️⃣ 통합 테스트에서 @Transactional을 제거한 이유
+**2️⃣ 통합 테스트에서 @Transactional을 제거한 이유**
 
 ```
   @Test
@@ -194,25 +194,25 @@ Transactional을 제거) 내부 트랜잭션이 각각 작동하며 원하는 �
 
 내부 로직에 손대지 않고, 테스트 내에서 해결하는 방안은 다음과 같았습니다.
 
-1) 내부 Transactional 함수를 따로 뽑는다.
+**1) 내부 Transactional 함수를 따로 뽑는다.**
 
 => 불가능합니다. 내부 함수 호출은 프록시 객체를 호출하지 않아서 적용이 되지 않음
 
-2) Test 함수에 Transactional을 달되, EntityManager Flush, Clear 사용
+**2) Test 함수에 Transactional을 달되, EntityManager Flush, Clear 사용**
 
 => 더티 체킹 적용과, 영속성 컨텍스트를 제거함으로써 원하는 흐름을 만들 수 있습니다.
 
 하지만 변경 사항 반영 지점이 많아질수록, Test 흐름과 관련없는 호출이 너무 많아지는 단점이 있었습니다.
 
-3) 트랜잭션을 위한 테스트 전용 헬퍼 객체 생성
+**3) 트랜잭션을 위한 테스트 전용 헬퍼 객체 생성**
 
 => 가능하나, 하나의 테스트를 위해 헬퍼 클래스를 만들기 비효율적이고 더 좋은 방식이 있었습니다.
 
 참고한 글 : https://cl8d.tistory.com/120
 
-4) TransactionTemplate 활용
+**4) TransactionTemplate 활용**
 
-=> 스프링에서 제공하는 TransactionTemplate을 사용한다면 함수 내부에서, 트랜잭션 영역을 어렵지 않게 생성할 수 있었습니다.
+=> 스프링에서 제공하는 TransactionTemplate을 사용한다면 함수 내부에서, 트랜잭션 영역을 보다 간단히 생성할수 있었습니다.
 
 ```
     transactionTemplate.executeWithoutResult(
