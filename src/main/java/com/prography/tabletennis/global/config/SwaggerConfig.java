@@ -15,7 +15,10 @@ class SwaggerConfig {
   public OpenAPI openAPI() {
     return new OpenAPI()
         .info(apiInfo())
-        .servers(List.of(new Server().url("http://localhost:8080")));
+        .servers(
+            List.of(
+                new Server().url("http://localhost:8080"),
+                new Server().url("http://woojin0804.iptime.org")));
   }
 
   private Info apiInfo() {

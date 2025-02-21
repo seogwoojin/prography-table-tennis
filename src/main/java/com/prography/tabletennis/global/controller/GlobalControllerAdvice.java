@@ -1,6 +1,8 @@
 package com.prography.tabletennis.global.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.prography.tabletennis.global.response.ApiResponse;
@@ -18,7 +20,8 @@ public class GlobalControllerAdvice {
     return ApiResponse.fail(e.getReturnCode());
   }
 
-  @ExceptionHandler(RuntimeException.class)
+  @ExceptionHandler(Exception.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public ApiResponse<Void> handleBusinessException(RuntimeException e) {
     log.error(e.getMessage(), e);
     return ApiResponse.error(ReturnCode.SERVER_ERROR);

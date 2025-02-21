@@ -30,6 +30,14 @@ public interface InitializationController {
                           name = "WRONG_REQUEST",
                           description = "잘못된 API 호출인 경우",
                           value = "{\n  \"code\": 201,\n  \"message\": \"불가능한 요청입니다.\"\n}"),
+                    })),
+        @io.swagger.v3.oas.annotations.responses.ApiResponse(
+            responseCode = "500",
+            content =
+                @Content(
+                    mediaType = "application/json",
+                    schema = @Schema(implementation = ApiResponse.class),
+                    examples = {
                       @ExampleObject(
                           name = "SERVER_ERROR",
                           description = "서버 에러가 발생한 경우",
