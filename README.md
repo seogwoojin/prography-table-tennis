@@ -229,3 +229,15 @@ Transactional을 제거) 내부 트랜잭션이 각각 작동하며 원하는 �
 ![img_3.png](readme_images/img_3.png)
 
 결과적으로 **TransactionTemplate**를 활용해 각 트랜잭션이 독립적으로 적용되는 통합 테스트를 작성할 수 있었습니다.
+
+<br>
+
+### 💻 배포 주소
+
+http://woojin0804.iptime.org (URL)
+
+http://woojin0804.iptime.org/swagger-ui/index.html (SWAGGER_PAGE)
+
+<br> 
+
+사용하던 윈도우 홈서버에, 도커를 활용해 서빙했습니다.
