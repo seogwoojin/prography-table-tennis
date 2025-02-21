@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,6 +45,7 @@ public class StartGameIntegrationTest {
   }
 
   @Test
+  @DisplayName("게임 시작 후, GAME_PROGRESS_TIME 이후 방 상태가 FINISH로 변경되는지 검증")
   public void testStartGame() {
     // given
     List<User> users = userRepository.findAll();
@@ -69,6 +71,7 @@ public class StartGameIntegrationTest {
   }
 
   @Test
+  @DisplayName("게임 시작 후, GAME_PROGRESS_TIME 이후 방 상태가 FINISH로 변경되는지 검증 - Double")
   public void testStartGameDouble() {
     // given
     List<User> users = userRepository.findAll();

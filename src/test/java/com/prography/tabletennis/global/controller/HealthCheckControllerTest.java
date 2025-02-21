@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,6 +22,7 @@ public class HealthCheckControllerTest {
   @Autowired private MockMvc mockMvc;
 
   @Test
+  @DisplayName("Health Check가 성공하면 200 Code를 응답한다.")
   public void testCheckServerHealth() throws Exception {
     mockMvc
         .perform(get("/health"))
