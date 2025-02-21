@@ -44,6 +44,7 @@ public class UserService {
     userRepository.saveAll(sortedUserList);
   }
 
+  @Transactional
   public void deleteAll() {
     userRepository.deleteAll();
   }
