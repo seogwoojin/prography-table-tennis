@@ -18,7 +18,7 @@ class SwaggerConfig {
         .servers(
             List.of(
                 new Server().url("http://localhost:8080"),
-                new Server().url("http://woojin0804.iptime.org")));
+                new Server().url("http://woojin0804.iptime.org"))); // 배포 API
   }
 
   private Info apiInfo() {
