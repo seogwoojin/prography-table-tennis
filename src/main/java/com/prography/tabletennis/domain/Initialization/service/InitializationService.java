@@ -1,7 +1,5 @@
 package com.prography.tabletennis.domain.Initialization.service;
 
-import jakarta.persistence.EntityManager;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,7 +20,6 @@ public class InitializationService {
   private final RoomService roomService;
   private final FakerApiService fakerApiService;
   private final UserRoomRepository userRoomRepository;
-  private final EntityManager entityManager;
 
   @Transactional
   public void initializeDatabase(InitDataRequest initDataRequest) {
@@ -37,6 +34,5 @@ public class InitializationService {
     userRoomRepository.deleteAll();
     userService.deleteAll();
     roomService.deleteAll();
-    entityManager.flush();
   }
 }
