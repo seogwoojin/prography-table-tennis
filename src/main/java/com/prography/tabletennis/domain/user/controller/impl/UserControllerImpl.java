@@ -23,7 +23,7 @@ public class UserControllerImpl implements UserController {
   @GetMapping
   public ApiResponse<UserPageResponse> getUserInfos(
       @RequestParam int size, @RequestParam int page) {
-    PageRequest pageRequest = PageRequest.of(size, page, Sort.by("id"));
+    PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id"));
     UserPageResponse response = userService.getUserInfos(pageRequest);
     return ApiResponse.success(response);
   }

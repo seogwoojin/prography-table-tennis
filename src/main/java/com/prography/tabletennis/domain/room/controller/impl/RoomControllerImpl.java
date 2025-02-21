@@ -29,7 +29,7 @@ public class RoomControllerImpl implements RoomController {
   @GetMapping
   public ApiResponse<RoomPageResponse> getRoomInfos(
       @RequestParam int size, @RequestParam int page) {
-    PageRequest pageRequest = PageRequest.of(size, page, Sort.by("id"));
+    PageRequest pageRequest = PageRequest.of(page, size, Sort.by("id"));
     RoomPageResponse response = roomService.getRoomInfos(pageRequest);
     return ApiResponse.success(response);
   }
