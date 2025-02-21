@@ -26,7 +26,6 @@ public class HealthCheckControllerTest {
         .perform(get("/health"))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        // 아래 jsonPath 검증은 ApiResponse의 JSON 구조에 맞게 수정 필요
         .andExpect(jsonPath("$.code").value(200))
         .andExpect(jsonPath("$.message").value(ReturnCode.SUCCESS.getMessage()));
   }
