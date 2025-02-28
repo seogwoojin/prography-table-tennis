@@ -232,11 +232,11 @@ Transactional을 제거) 내부 트랜잭션이 각각 작동하며 원하는 �
 
 <br>
 
-### 💻 배포 주소
+### 💻 배포 주소 (Close)
 
-http://woojin0804.iptime.org (URL)
+~~http://woojin0804.iptime.org (URL)~~
 
-http://woojin0804.iptime.org/swagger-ui/index.html (SWAGGER_PAGE)
+~~http://woojin0804.iptime.org/swagger-ui/index.html (SWAGGER_PAGE)~~
 
 <br> 
 
